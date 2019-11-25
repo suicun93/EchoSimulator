@@ -4,6 +4,10 @@
         <servlet-name>Start</servlet-name>
         <servlet-class>Servlet.Start</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Time</servlet-name>
+        <servlet-class>Servlet.Time</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Start</servlet-name>
         <url-pattern>/Start</url-pattern>
@@ -15,6 +19,10 @@
     <servlet-mapping>
         <servlet-name>Stop</servlet-name>
         <url-pattern>/Stop</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Time</servlet-name>
+        <url-pattern>/Time</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

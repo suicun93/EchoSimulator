@@ -15,7 +15,7 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
 
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
-    private final byte[] mOperationStatus = {(byte) 0x30};                              // EPC = 0x80
+    private final byte[] mOperationStatus = {(byte) 0x31};                              // EPC = 0x80
     private final byte[] mInsallationLocation = {(byte) 0x00};                          // EPC = 0x81
     private final byte[] mFaultStatus = {(byte) 0x42};                                  // EPC = 0x88
     private final byte[] mManufacturerCode = {0, 0, 0};                                 // EPC = 0x8A

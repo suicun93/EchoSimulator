@@ -12,7 +12,7 @@ public class MyElectricVehicle extends ElectricVehicle {
 
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
-    private final byte[] mOperationStatus = {(byte) 0x30};            // EPC = 0x80
+    private final byte[] mOperationStatus = {(byte) 0x31};            // EPC = 0x80
     private final byte[] mInsallationLocation = {(byte) 0x00};        // EPC = 0x81
     private final byte[] mFaultStatus = {(byte) 0x42};                // EPC = 0x88
     private final byte[] mManufacturerCode = {0, 0, 0};               // EPC = 0x8A
@@ -27,7 +27,8 @@ public class MyElectricVehicle extends ElectricVehicle {
     private final byte[] mChargeableDischargeAbleStatus = {(byte) 0x42};                                          // EPC = 0xC7
     private final byte[] mUsedCapacity1 = {(byte) 0x00, (byte) 0x00, (byte) 0x93, (byte) 0x93};                   // EPC = 0xD0
     private final byte[] mUsedCapacity2 = {(byte) 0x00, (byte) 0x93};                                             // EPC = 0xD1
-    private final byte[] mInstantaneousChargeDischargeCurrent = {(byte) 0x00, (byte) 0x93};                       // EPC = 0xD4
+    private final byte[] mInstantaneousChargeDischargeElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x92};    // EPC = 0xD3 (W)
+    private final byte[] mInstantaneousChargeDischargeCurrent = {(byte) 0x00, (byte) 0x93};                       // EPC = 0xD4 (A)
     private final byte[] mOperationModeSetting = {(byte) 0x42};                                                   // EPC = 0xDA
     private final byte[] mRemainingBatteryCapacity1 = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x93};       // EPC = 0xE2
     private final byte[] mRemainingBatteryCapacity2 = {(byte) 0x00, (byte) 0x62};                                 // EPC = 0xE3
@@ -259,5 +260,10 @@ public class MyElectricVehicle extends ElectricVehicle {
     @Override
     protected byte[] getMeasuredInstantaneousChargeDischargeCurrent() {
         return mInstantaneousChargeDischargeCurrent;
+    }
+
+    @Override
+    protected byte[] getMeasuredInstantaneousChargeDischargeElectricEnergy() {
+        return mInstantaneousChargeDischargeElectricEnergy;
     }
 }

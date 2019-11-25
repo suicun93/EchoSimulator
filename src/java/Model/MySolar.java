@@ -15,14 +15,14 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
 
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
-    private final byte[] mOperationStatus = {(byte) 0x30};                              // EPC = 0x80
+    private final byte[] mOperationStatus = {(byte) 0x31};                              // EPC = 0x80
     private final byte[] mInsallationLocation = {(byte) 0x00};                          // EPC = 0x81
     private final byte[] mFaultStatus = {(byte) 0x42};                                  // EPC = 0x88
     private final byte[] mManufacturerCode = {0, 0, 0};                                 // EPC = 0x8A
 
     // Private properties
-    private final byte[] mInstantaneousAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x15};
-    private final byte[] mCumulativeAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x00, (byte) 0x05, (byte) 0x15};
+    private final byte[] mInstantaneousAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x15};                           // 0xE0 W
+    private final byte[] mCumulativeAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x00, (byte) 0x05, (byte) 0x15};    // 0xE1 kWh
 
     /**
      * Setup Property maps for getter, setter, status announcement changed

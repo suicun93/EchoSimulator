@@ -17,18 +17,19 @@ public class MyBattery extends Battery {
 
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
-    private final byte[] mOperationStatus = {(byte) 0x30};                              // EPC = 0x80
+    private final byte[] mOperationStatus = {(byte) 0x31};                              // EPC = 0x80
     private final byte[] mInsallationLocation = {(byte) 0x00};                          // EPC = 0x81
     private final byte[] mFaultStatus = {(byte) 0x42};                                  // EPC = 0x88
     private final byte[] mManufacturerCode = {0, 0, 0};                                 // EPC = 0x8A
 
     // Private properties
-    private final byte[] mInstantaneousChargeDischargeCurrent = {(byte) 0x00, (byte) 0x92};                     // EPC = 0xD4
-    private final byte[] mOperationModeSetting = {(byte) 0x44};                                                 // EPC = 0xDA
-    private final byte[] mRemainingStoredElectricity1 = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x93};   // EPC = 0xE2
-    private final byte[] mRemainingStoredElectricity2 = {(byte) 0x00, (byte) 0x93};                             // EPC = 0xE3
-    private final byte[] mRemainingStoredElectricity3 = {(byte) 0x60};                                          // EPC = 0xE4
-    private final byte[] mBatteryType = {(byte) 0x01};                                                          // EPC = 0xE6
+    private final byte[] mInstantaneousChargeDischargeElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x12, (byte) 0x92};            // EPC = 0xD3 (W)
+    private final byte[] mInstantaneousChargeDischargeCurrent = {(byte) 0x00, (byte) 0x92};                                             // EPC = 0xD4 (A)
+    private final byte[] mOperationModeSetting = {(byte) 0x44};                                                                         // EPC = 0xDA
+    private final byte[] mRemainingStoredElectricity1 = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x93};                           // EPC = 0xE2 
+    private final byte[] mRemainingStoredElectricity2 = {(byte) 0x00, (byte) 0x93};                                                     // EPC = 0xE3
+    private final byte[] mRemainingStoredElectricity3 = {(byte) 0x60};                                                                  // EPC = 0xE4
+    private final byte[] mBatteryType = {(byte) 0x01};                                                                                  // EPC = 0xE6
 
     /**
      * Setup Property maps for getter, setter, status announcement changed
@@ -46,6 +47,7 @@ public class MyBattery extends Battery {
     protected void setupPropertyMaps() {
         super.setupPropertyMaps();
         // Getter
+        addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT);
         // Setter
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT);
@@ -211,5 +213,10 @@ public class MyBattery extends Battery {
     @Override
     protected byte[] getMeasuredInstantaneousChargeDischargeCurrent() {
         return mInstantaneousChargeDischargeCurrent;
+    }
+
+    @Override
+    protected byte[] getMeasuredInstantaneousChargeDischargeElectricEnergy() {
+        return mInstantaneousChargeDischargeElectricEnergy;
     }
 }
