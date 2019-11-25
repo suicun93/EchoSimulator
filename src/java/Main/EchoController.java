@@ -180,23 +180,4 @@ public class EchoController {
         }); // No more events.
     }
 
-//    // Function to add x in arr 
-//    public static DeviceObject[] addDevice(DeviceObject arr[], DeviceObject x) {
-//        int n = arr.length;
-//
-//        // create a new array of size n+1 
-//        DeviceObject newarr[] = new DeviceObject[n + 1];
-//
-//        // insert the elements from 
-//        // the old array into the new array 
-//        // insert all elements till n 
-//        // then insert x at n+1 
-//        for (int i = 0; i < n; i++) {
-//            newarr[i] = arr[i];
-//        }
-//
-//        newarr[n] = x;
-//
-//        return newarr;
-//    }
 }
