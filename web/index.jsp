@@ -78,7 +78,13 @@
         var LightStart = document.getElementById('startLightBtn');
         var LightStop = document.getElementById('stopLightBtn');
 
-        function update(device, enable) {
+        /**
+         * Update UI
+         * @@param {String} device
+         * @@param {Boolean} enable
+         */
+        // Disable device
+        function updateUI(device, enable) {
 
             // EV
             if (device === "ev") {
@@ -126,10 +132,9 @@
         }
 
         /**
-         * Stop 1 device
+         * Disable 1 device
          * @@param {String} device
          */
-        // Disable device
         function disable(device) {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("POST", "Stop", true);
@@ -144,7 +149,7 @@
                         window.alert("Stop failed: " + revdata);
                     } else {
                         console.log("Success");
-                        update(device, false);
+                        updateUI(device, false);
                     }
                 } else {
                     window.alert("Connection failed: " + xmlHttp.status);
@@ -153,7 +158,10 @@
             xmlHttp.send(device);
         }
 
-        // Enable device
+        /**
+         * Enable 1 device
+         * @@param {String} device
+         */
         function enable(device) {
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("POST", "Start", true);
@@ -168,7 +176,7 @@
                         window.alert("Start failed: " + revdata);
                     } else {
                         console.log("Success");
-                        update(device, true);
+                        updateUI(device, true);
                     }
                 } else {
                     window.alert("Connection failed: " + xmlHttp.status);
