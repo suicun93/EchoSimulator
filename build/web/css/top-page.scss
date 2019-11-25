@@ -1,0 +1,27 @@
+@mixin bg-element($z-index){
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    z-index: $z-index;
+}
+#bg-img{
+    object-fit: cover;
+    @include bg-element(-1)
+}
+.bg-color{
+    background-color: #40404080;
+    @include bg-element(0);
+}
+.welcome-banner{
+    text-align: center;
+    h1{
+        padding-top: 40vh;
+        font-weight: 600;
+        color: white;
+        font-size: 4vw;
+    }
+    button{
+        min-width: 12rem;
+        margin: 2rem;
+    }
+}

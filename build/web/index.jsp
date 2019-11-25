@@ -11,58 +11,69 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="css/bulma.min.css"/>
+        <link rel="stylesheet" href="css/top-page.css"/>
         <title>Simulator Page</title>
     </head>
     <body>
-        <h1>Simulator Controller:</h1>
-        <!--Start-->
-        <input type="button" id="startEVBtn" value="Start EV" onclick="enable('ev')"
-               <% if (EchoController.contains("ev")) {
-               %>disabled<%
-                   }
-               %>/>
-        <input type="button" id="startBatteryBtn" value="Start Battery" onclick="enable('battery')"
-               <% if (EchoController.contains("battery")) {
-               %>disabled<%
-                   }
-               %>/>
-        <input type="button" id="startSolarBtn" value="Start Solar" onclick="enable('solar')"
-               <% if (EchoController.contains("solar")) {
-               %>disabled<%
-                   }
-               %>/>
-        <input type="button" id="startLightBtn" value="Start Light" onclick="enable('light')"
-               <% if (EchoController.contains("light")) {
-               %>disabled<%
-                   }
-               %>/>
+        <img src="images/HEMS-top-img.jpg" alt="HEMS house" id="bg-img">
+        <div class="bg-color"></div>
+        <section>
+            <div class="container">
+                <div class="welcome-banner">
+                    <h1>Simulator Controller:</h1>
+                    <div class="main-menu-btn">
+                        <button class ="button is-primary is-medium is-rounded" id="startEVBtn" onclick="enable('ev')"
+                               <% if (EchoController.contains("ev")) {
+                               %>disabled<%
+                                   }
+                               %>>Start EV</button>
+                        <button class ="button is-primary is-medium is-rounded" id="startBatteryBtn" onclick="enable('battery')"
+                               <% if (EchoController.contains("battery")) {
+                               %>disabled<%
+                                   }
+                               %>>Start Battery</button>
+                        <button class ="button is-primary is-medium is-rounded" id="startSolarBtn" onclick="enable('solar')"
+                               <% if (EchoController.contains("solar")) {
+                               %>disabled<%
+                                   }
+                               %>>Start Solar</button>
+                        <button class ="button is-primary is-medium is-rounded" id="startLightBtn" value="Start Light" onclick="enable('light')"
+                               <% if (EchoController.contains("light")) {
+                               %>disabled<%
+                                   }
+                               %>>Start Light</button>
 
-        <br>
-        <!--Stop-->
-        <input type="button" id="stopEVBtn" value="Stop EV" onclick="disable('ev')"
-               <% if (!EchoController.contains("ev")) {
-               %>disabled<%
-                   }
-               %>
-               />
-        <input type="button" id="stopBatteryBtn" value="Stop Battery" onclick="disable('battery')"
-               <% if (!EchoController.contains("battery")) {
-               %>disabled<%
-                   }
-               %>
-               />
-        <input type="button" id="stopSolarBtn" value="Stop Solar" onclick="disable('solar')"
-               <% if (!EchoController.contains("solar")) {
-               %>disabled<%
-                   }
-               %>
-               />
-        <input type="button" id="stopLightBtn" value="Stop Light" onclick="disable('light')"
-               <% if (!EchoController.contains("light")) {
-               %>disabled<%
-                   }
-               %>
-               />
+                        <br>
+                        <!--Stop-->
+                        <button class ="button is-rounded is-danger is-medium" type="button" id="stopEVBtn" value="Stop EV" onclick="disable('ev')"
+                               <% if (!EchoController.contains("ev")) {
+                               %>disabled<%
+                                   }
+                               %>
+                               >Stop EV</button>
+                        <button class ="button is-rounded is-danger is-medium" type="button" id="stopBatteryBtn" value="Stop Battery" onclick="disable('battery')"
+                               <% if (!EchoController.contains("battery")) {
+                               %>disabled<%
+                                   }
+                               %>
+                               >Stop Battery</button>
+                        <button class ="button is-rounded is-danger is-medium" type="button" id="stopSolarBtn" value="Stop Solar" onclick="disable('solar')"
+                               <% if (!EchoController.contains("solar")) {
+                               %>disabled<%
+                                   }
+                               %>
+                               >Stop Solar</button>
+                        <button class ="button is-rounded is-danger is-medium" type="button" id="stopLightBtn" value="Stop Light" onclick="disable('light')"
+                               <% if (!EchoController.contains("light")) {
+                               %>disabled<%
+                                   }
+                               %>
+                               >Stop Light</button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </body>
     <script>
         const INTERVAL_TIME = 15000;
