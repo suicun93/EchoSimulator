@@ -5,11 +5,16 @@
  */
 package Servlet;
 
+import Common.GPIOManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.TimeZone;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +39,23 @@ public class Time extends HttpServlet {
         try {
             out = response.getWriter();
             String time = getParam(request);
-            String command = "date --set=\"" + time + "\"";
-            System.out.println("command: " + command);
-            Runtime.getRuntime().exec(command);
-            out.print("success");
+            if (time.isEmpty()) { // -> Getter
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+                out.print(dtf.format(now));
+            } else {              // -> Setter
+                Process proc = Runtime.getRuntime().exec(new String[]{"sudo", "date", "--set", time});
+                java.io.InputStream is = proc.getInputStream();
+                java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+                String val;
+                if (s.hasNext()) {
+                    val = s.next();
+                } else {
+                    val = "";
+                }
+                System.out.println(val);
+                out.print("success");
+            }
         } catch (IOException ex) {
             System.out.println(Time.class.getName() + ex.getMessage());
             if (out != null) {
@@ -48,7 +66,7 @@ public class Time extends HttpServlet {
 
     public static String getParam(HttpServletRequest request) throws IOException {
 
-        String body = null;
+        String body;
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader bufferedReader = null;
 
@@ -57,7 +75,7 @@ public class Time extends HttpServlet {
             if (inputStream != null) {
                 bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
                 char[] charBuffer = new char[128];
-                int bytesRead = -1;
+                int bytesRead;
                 while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
                     stringBuilder.append(charBuffer, 0, bytesRead);
                 }

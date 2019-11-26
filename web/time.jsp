@@ -31,42 +31,27 @@
         var dateInput = document.getElementById("date");
         var timeInput = document.getElementById("time");
         window.onload = () => {
-//            var today = new Date();
-//            var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-//            var hour = today.getHours() + "";
-//            var minute = today.getMinutes() + "";
-//            if (hour.length === 1) {
-//                hour = "0" + hour;
-//            }
-//            if (minute.length === 1) {
-//                minute = "0" + minute;
-//            }
-//            var time = hour + ":" + minute;
-//            dateInput.value = date;
-//            timeInput.value = time;
             //FF, Opera, Safari, Chrome
             var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('HEAD', window.location.href.toString(), true);
+            xmlHttp.open('POST', "Time", true);
             xmlHttp.setRequestHeader("Content-Type", "text/html");
             xmlHttp.onload = () => {
-                var months = {jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
-                    jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11};
-                var date
-                        = xmlHttp.getResponseHeader("Date");
-                var p =
-                        date.split(' ');
-                var month =
-                        (months[p[2].toLowerCase()] + 1) + "";
-                var day =
-                        p[1] + "";
-                month =
-                        month.length !== 1 ? month : "0" + month;
-                day =
-                        day.length === 1 ? "0" + day : day;
-                dateInput.value =
-                        p[3] + '-' + month + '-' + day;
-                timeInput.value =
-                        p[4].substr(0, 5);
+                if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
+
+                    var date = xmlHttp.responseText;
+                    var p = date.split(' ');
+                    var months = {jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11};
+                    var month = (months[p[1].toLowerCase()] + 1) + "";
+                    var day = p[0] + "";
+                    month = month.length !== 1 ? month : "0" + month;
+                    day = day.length !== 1 ? day : "0" + day;
+                    dateInput.value =
+                            p[2] + '-' + month + '-' + day;
+                    timeInput.value =
+                            p[3].substr(0, 5);
+                } else {
+                    window.alert("Connection failed: " + xmlHttp.status);
+                }
             };
             xmlHttp.send('');
         };

@@ -24,9 +24,12 @@
         <servlet-name>Time</servlet-name>
         <url-pattern>/Time</url-pattern>
     </servlet-mapping>
+    <display-name>
+        Máy ảo, EV, Battery, Solar, Light, các kiểu con đà điểu.
+    </display-name>
     <session-config>
         <session-timeout>
-            1
+            5
         </session-timeout>
     </session-config>
 </web-app>
