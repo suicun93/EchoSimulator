@@ -37,11 +37,9 @@
             xmlHttp.setRequestHeader("Content-Type", "text/html");
             xmlHttp.onload = () => {
                 if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
-
                     var date = xmlHttp.responseText;
                     var p = date.split(' ');
-                    var months = {jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11};
-                    var month = (months[p[1].toLowerCase()] + 1) + "";
+                    var month = p[1] + "";
                     var day = p[0] + "";
                     month = month.length !== 1 ? month : "0" + month;
                     day = day.length !== 1 ? day : "0" + day;

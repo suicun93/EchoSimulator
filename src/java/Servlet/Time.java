@@ -5,15 +5,13 @@
  */
 package Servlet;
 
-import Common.GPIOManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +24,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Time extends HttpServlet {
 
+//    public static void main(String[] args) {
+//        Date d1 = new Date();
+//        SimpleDateFormat dtf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+//        dtf.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        System.out.println(dtf.format(d1));
+//    }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,8 +44,10 @@ public class Time extends HttpServlet {
             out = response.getWriter();
             String time = getParam(request);
             if (time.isEmpty()) { // -> Getter
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss");
-                LocalDateTime now = LocalDateTime.now();
+                // "dd MMM yyyy HH:mm:ss"
+                Date now = new Date();
+                SimpleDateFormat dtf = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
+                dtf.setTimeZone(TimeZone.getTimeZone("GMT"));
                 out.print(dtf.format(now));
             } else {              // -> Setter
                 Process proc = Runtime.getRuntime().exec(new String[]{"sudo", "date", "--set", time});
