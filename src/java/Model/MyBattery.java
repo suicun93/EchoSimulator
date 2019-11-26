@@ -47,10 +47,12 @@ public class MyBattery extends Battery {
     protected void setupPropertyMaps() {
         super.setupPropertyMaps();
         // Getter
-        addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT);
+        addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
+
         // Setter
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT);
+        addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addSetProperty(EPC_REMAINING_STORED_ELECTRICITY1);
         addSetProperty(EPC_REMAINING_STORED_ELECTRICITY3);
     }
@@ -83,10 +85,10 @@ public class MyBattery extends Battery {
     }
 
     @Override
-    protected boolean setInstallationLocation(byte[] bytes) {
+    protected boolean setInstallationLocation(byte[] edt) {
         try {
             // Announcement at status change
-            mInsallationLocation[0] = bytes[0];
+            mInsallationLocation[0] = edt[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -130,10 +132,10 @@ public class MyBattery extends Battery {
     }
 
     @Override
-    protected boolean setOperationModeSetting(byte[] bytes) {
+    protected boolean setOperationModeSetting(byte[] edt) {
         try {
             // Announcement at status change
-            mOperationModeSetting[0] = bytes[0];
+            mOperationModeSetting[0] = edt[0];
             inform().reqInformOperationModeSetting().send();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -178,35 +180,36 @@ public class MyBattery extends Battery {
      */
     @Override
     protected synchronized boolean setProperty(EchoProperty property) {
+        boolean success = super.setProperty(property);
+        if (success) {
+            return success;
+        }
+
+        // My Set property
         switch (property.epc) {
 
-            case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT:     // EPC = 0xD4
-                if (property.edt.length == 2) {
-                    System.arraycopy(property.edt, 0,
-                            mInstantaneousChargeDischargeCurrent, 0, 2);
-                    super.setProperty(property);
-                    return true;
-                } else {
-                    return super.setProperty(property);
-                }
+            // EPC = 0xD4
+            case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT:
+                System.arraycopy(property.edt, 0, mInstantaneousChargeDischargeCurrent, 0, 2);
+                return true;
 
-            case EPC_REMAINING_STORED_ELECTRICITY1:                       // EPC = 0xE2
-                if (property.edt.length == 4) {
-                    System.arraycopy(property.edt, 0,
-                            mRemainingStoredElectricity1, 0, 4);
-                    super.setProperty(property);
-                    return true;
-                } else {
-                    return super.setProperty(property);
-                }
+            // EPC = 0xD3
+            case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY:
+                System.arraycopy(property.edt, 0, mInstantaneousChargeDischargeElectricEnergy, 0, 4);
+                return true;
 
-            case EPC_REMAINING_STORED_ELECTRICITY3:                       // EPC = 0xE4
-                mRemainingStoredElectricity3[0] = property.edt[0];
-                super.setProperty(property);
+            // EPC = 0xE2
+            case EPC_REMAINING_STORED_ELECTRICITY1:
+                System.arraycopy(property.edt, 0, mRemainingStoredElectricity1, 0, 4);
+                return true;
+
+            // EPC = 0xE4
+            case EPC_REMAINING_STORED_ELECTRICITY3:
+                System.arraycopy(property.edt, 0, mRemainingStoredElectricity3, 0, 1);
                 return true;
 
             default:
-                return super.setProperty(property);
+                return false;
         }
     }
 

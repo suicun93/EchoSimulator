@@ -5,6 +5,7 @@
  */
 package Model;
 
+import com.sonycsl.echo.EchoProperty;
 import java.io.IOException;
 
 /**
@@ -39,6 +40,8 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     @Override
     protected void setupPropertyMaps() {
         super.setupPropertyMaps();
+        // Setter
+        addSetProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED);
     }
 
     /**
@@ -69,10 +72,10 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     }
 
     @Override
-    protected boolean setInstallationLocation(byte[] bytes) {
+    protected boolean setInstallationLocation(byte[] edt) {
         try {
             // Announcement at status change
-            mInsallationLocation[0] = bytes[0];
+            mInsallationLocation[0] = edt[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -118,5 +121,24 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     @Override
     protected byte[] getMeasuredCumulativeAmountOfElectricityGenerated() {
         return mCumulativeAmountOfElectricityGenerated;
+    }
+
+    @Override
+    protected synchronized boolean setProperty(EchoProperty property) {
+        boolean success = super.setProperty(property);
+        if (success) {
+            return success;
+        }
+
+        switch (property.epc) {
+
+            // EPC = 0xD4
+            case EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED:
+                System.arraycopy(property.edt, 0, mInstantaneousAmountOfElectricityGenerated, 0, 2);
+                return true;
+
+            default:
+                return false;
+        }
     }
 }
