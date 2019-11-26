@@ -17,7 +17,7 @@
     </head>
     <body>
 
-        <img src="images/HEMS-top-img.jpg" alt="HEMS house" id="bg-img">
+        <img src="img/HEMS-top-img.jpg" alt="HEMS house" id="bg-img">
         <div class="bg-color"></div>
 
         <section>

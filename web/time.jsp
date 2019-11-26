@@ -10,19 +10,29 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="css/bulma.min.css">
+        <link rel="stylesheet" href="css/style.css">
         <title>Set up system time</title>
     </head>
     <body>
-        <br>
-        <br>        <br>
-        Date: <input type="date" id="date" value="" />
-        <br>        <br>
-        <br>
-        Time: <input type="time" id="time" value="" />
-        <br>        <br>
-        <br>
-        <button onclick="setTime()">Set</button>
+        <div class="main columns">
+            <div class="column is-6 is-offset-3">
+                <input size="16" type="text" readonly
+                       class="form_datetime input is-rounded is-primary" id="time">
+                <button class="button is-primary" onclick="setTime()">
+                    SET
+                </button>
+            </div>
+
+        </div>
     </body>
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+        $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+    </script>
+
     <script>
         const INTERVAL_TIME = 15000;
         const TIME_OUT = 1000;
@@ -43,10 +53,8 @@
                     var day = p[0] + "";
                     month = month.length !== 1 ? month : "0" + month;
                     day = day.length !== 1 ? day : "0" + day;
-                    dateInput.value =
-                            p[2] + '-' + month + '-' + day;
                     timeInput.value =
-                            p[3].substr(0, 5);
+                            p[2] + '-' + month + '-' + day + " "+p[3].substr(0, 5);
                 } else {
                     window.alert("Connection failed: " + xmlHttp.status);
                 }
@@ -55,7 +63,6 @@
         };
 
         function setTime() {
-            date = dateInput.value;
             time = timeInput.value;
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("POST", "Time", true);
@@ -75,7 +82,7 @@
                     window.alert("Connection failed: " + xmlHttp.status);
                 }
             };
-            xmlHttp.send(date + " " + time);
+            xmlHttp.send(time);
         }
 
     </script>
