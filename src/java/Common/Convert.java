@@ -39,13 +39,6 @@ public class Convert {
         return Integer.parseInt(Byte.toString(number), 10);
     }
 
-    // get curent date time
-    public static void curentDateTime() {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        LocalDateTime now = LocalDateTime.now();
-        System.out.println(dtf.format(now));
-    }
-
     public static byte[] hexStringToByteArray(String s) {
         if (s.contains("0x")) {
             s = s.replace("0x", "");
@@ -63,7 +56,7 @@ public class Convert {
         // "dd MMM yyyy HH:mm:ss"
         Date now = new Date();
         SimpleDateFormat dtf = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
-        dtf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        dtf.setTimeZone(TimeZone.getTimeZone("GMT+1"));
         return dtf.format(now);
     }
 }
