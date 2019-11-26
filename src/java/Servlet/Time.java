@@ -5,14 +5,12 @@
  */
 package Servlet;
 
+import Common.Convert;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,18 +22,11 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Time extends HttpServlet {
 
-//    public static void main(String[] args) {
-//        Date d1 = new Date();
-//        SimpleDateFormat dtf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
-//        dtf.setTimeZone(TimeZone.getTimeZone("GMT"));
-//        System.out.println(dtf.format(d1));
-//    }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
+     * @param request
+     * @param response
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/html;charset=UTF-8");
@@ -44,22 +35,9 @@ public class Time extends HttpServlet {
             out = response.getWriter();
             String time = getParam(request);
             if (time.isEmpty()) { // -> Getter
-                // "dd MMM yyyy HH:mm:ss"
-                Date now = new Date();
-                SimpleDateFormat dtf = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
-                dtf.setTimeZone(TimeZone.getTimeZone("GMT"));
-                out.print(dtf.format(now));
+                out.print(Convert.getCurrentTime());
             } else {              // -> Setter
-                Process proc = Runtime.getRuntime().exec(new String[]{"sudo", "date", "--set", time});
-                java.io.InputStream is = proc.getInputStream();
-                java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-                String val;
-                if (s.hasNext()) {
-                    val = s.next();
-                } else {
-                    val = "";
-                }
-                System.out.println(val);
+                Runtime.getRuntime().exec(new String[]{"sudo", "date", "--set", time});
                 out.print("success");
             }
         } catch (IOException ex) {
@@ -70,6 +48,7 @@ public class Time extends HttpServlet {
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     public static String getParam(HttpServletRequest request) throws IOException {
 
         String body;
@@ -104,7 +83,6 @@ public class Time extends HttpServlet {
         return body;
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

@@ -21,7 +21,7 @@
         Time: <input type="time" id="time" value="" />
         <br>        <br>
         <br>
-        <button onclick="sendTime()">Set</button>
+        <button onclick="setTime()">Set</button>
     </body>
     <script>
         const INTERVAL_TIME = 15000;
@@ -54,7 +54,7 @@
             xmlHttp.send('');
         };
 
-        function sendTime() {
+        function setTime() {
             date = dateInput.value;
             time = timeInput.value;
             var xmlHttp = new XMLHttpRequest();

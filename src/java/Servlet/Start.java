@@ -68,6 +68,7 @@ public class Start extends HttpServlet {
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     public static String getParam(HttpServletRequest request) throws IOException {
         String body;
         StringBuilder stringBuilder = new StringBuilder();
@@ -101,7 +102,6 @@ public class Start extends HttpServlet {
         return body;
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

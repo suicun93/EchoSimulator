@@ -5,8 +5,11 @@
  */
 package Common;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  *
@@ -56,11 +59,11 @@ public class Convert {
         return data;
     }
 
-//    public static byte[] hexStringToByteArray(String hex) {
-//        return Byte.pa
-//    }
-    public static void main(String[] args) {
-
-        printHexArray(hexStringToByteArray("0x05"));
+    public static String getCurrentTime() {
+        // "dd MMM yyyy HH:mm:ss"
+        Date now = new Date();
+        SimpleDateFormat dtf = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
+        dtf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return dtf.format(now);
     }
 }
