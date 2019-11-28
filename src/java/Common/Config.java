@@ -39,13 +39,13 @@ public class Config {
         calendar.set(Calendar.MINUTE, minute);
 
         // Save config
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("/opt/tomcat/webapps/Simulator/" + fileName))) {
             writer.write(time + "," + mode + "," + d3);
         }
     }
 
     public static String load(String filename) throws Exception {
-        byte[] encoded = Files.readAllBytes(Paths.get(filename));
+        byte[] encoded = Files.readAllBytes(Paths.get("/opt/tomcat/webapps/Simulator/" + filename));
         return new String(encoded, StandardCharsets.UTF_8);
     }
 }
