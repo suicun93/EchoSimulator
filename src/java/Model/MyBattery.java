@@ -9,6 +9,7 @@ import static com.sonycsl.echo.eoj.device.housingfacilities.Battery.EPC_REMAININ
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -37,7 +38,7 @@ public class MyBattery extends Battery {
     private final byte[] mRemainingStoredElectricity2 = {(byte) 0x00, (byte) 0x93};                                                     // EPC = 0xE3 (0.1Ah)
     private final byte[] mRemainingStoredElectricity3 = {(byte) 0x60};                                                                  // EPC = 0xE4 (%)
     private final byte[] mBatteryType = {(byte) 0x01};                                                                                  // EPC = 0xE6
-    private Timer powerConsumtionScheduler;
+    private Timer startPowerConsumption, endPowerConsumption;
 
     /**
      * Setup Property maps for getter, setter, status announcement changed
@@ -257,31 +258,36 @@ public class MyBattery extends Battery {
         // Load config
         String paramString = Config.load("battery.txt");
         String[] params = paramString.split("\\,");
-        String timeStr = params[0];
-        String modeStr = params[1];
-        String d3Str = params[2];
+        String startTimeStr = params[0];
+        String endTimeStr = params[1];
+        String modeStr = params[2];
+        String d3Str = params[3];
 
         // Time, Mode, D3
-        String[] time = timeStr.split("\\:");
-        int d3 = Integer.parseInt(d3Str);
-        int hour = Integer.parseInt(time[0]);
-        int minute = Integer.parseInt(time[1]);
+        String[] startTime = startTimeStr.split("\\:");
+        String[] endTime = endTimeStr.split("\\:");
+        int hourStart = Integer.parseInt(startTime[0]);
+        int minuteStart = Integer.parseInt(startTime[1]);
+        int hourEnd = Integer.parseInt(endTime[0]);
+        int minuteEnd = Integer.parseInt(endTime[1]);
         byte[] mode = Convert.hexStringToByteArray(modeStr);
+        int d3 = Integer.parseInt(d3Str);
 
         // SetTimeForCalendar
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(Calendar.HOUR_OF_DAY, hourStart);
+        startCalendar.set(Calendar.MINUTE, minuteStart);
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(Calendar.HOUR_OF_DAY, hourEnd);
+        endCalendar.set(Calendar.MINUTE, minuteEnd);
 
-        // Timer Initilization.
-        if (powerConsumtionScheduler != null) {
-            powerConsumtionScheduler.cancel();
+        // Start Timer Initilization.
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
         }
-        if (increaseE2 != null) {
-            increaseE2.cancel();
-        }
-        powerConsumtionScheduler = new Timer();
-        powerConsumtionScheduler.schedule(new TimerTask() {
+
+        startPowerConsumption = new Timer();
+        startPowerConsumption.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
 
@@ -295,17 +301,22 @@ public class MyBattery extends Battery {
                 // Get D0, E2
                 int d0 = Convert.byteArrayToInt(mRatedElectricEnergy);
                 int firstE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
+                System.out.println("Charging Start: E2 = " + firstE2);
 
                 // Loop every second
-                increaseE2 = new Timer();
                 int delay = 0;
                 int period = 1000;
+                long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
                 second = 0;
+                if (increaseE2 != null) {
+                    increaseE2.cancel();
+                }
+                increaseE2 = new Timer();
                 increaseE2.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
                         second++;
-                        float currentE2 = firstE2 + ((float) d3 / 3600) * second;
+                        float currentE2 = firstE2 + ((float) d3 / secondInHour) * second;
                         System.out.println("Second " + second + ", E2 = " + currentE2);
                         setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
 
@@ -314,12 +325,30 @@ public class MyBattery extends Battery {
                             setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, mRatedElectricEnergy)); // 0xE2 = 0xD0
                             setOperationModeSetting(new byte[]{(byte) 0x44});                                       // 0xDA = 0x44.
                             // Log and cancel
-                            System.out.println("Finish E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
+                            System.out.println("Charge Full E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
                             increaseE2.cancel();
                         }
                     }
                 }, delay, period);
             }
-        }, calendar.getTime());
+        }, startCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+
+        // End Timer Initilization.
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+        }
+        endPowerConsumption = new Timer();
+        endPowerConsumption.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (increaseE2 != null) {
+                    increaseE2.cancel();
+                }
+                // If 0xE2 >= 0xD0,  0xDA = 0x44.
+                setOperationModeSetting(new byte[]{(byte) 0x44});                                       // 0xDA = 0x44.
+                // Log and cancel
+                System.out.println("Charging End E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
+            }
+        }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
     }
 }

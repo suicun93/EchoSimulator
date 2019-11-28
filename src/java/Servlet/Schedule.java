@@ -48,10 +48,11 @@ public class Schedule extends HttpServlet {
                 return;
             }
             String deviceName = params[0];
-            String time = params[1];
-            String mode = params[2];
-            String d3 = params[3];
-            setup(deviceName, time, mode, d3);
+            String startTime = params[1];
+            String endTime = params[2];
+            String mode = params[3];
+            String d3 = params[4];
+            setup(deviceName, startTime, endTime, mode, d3);
             out.print("success");
         } catch (Exception ex) {
             System.out.println(Schedule.class.getName() + ex.getMessage());
@@ -132,23 +133,23 @@ public class Schedule extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private void setup(String deviceName, String time, String mode, String d3) throws Exception {
+    private void setup(String deviceName, String startTime, String endTime, String mode, String d3) throws Exception {
         // Save config and schedule
         DeviceObject device;
         if (deviceName.equalsIgnoreCase("battery")) {
-            Config.save(deviceName + ".txt", time, mode, d3);
+            Config.save(deviceName + ".txt", startTime, endTime, mode, d3);
             device = EchoController.BATTERY;
             ((MyBattery) device).schedule();
             return;
         }
         if (deviceName.equalsIgnoreCase("ev")) {
-            Config.save(deviceName + ".txt", time, mode, d3);
+            Config.save(deviceName + ".txt", startTime, endTime, mode, d3);
             device = EchoController.EV;
             ((MyElectricVehicle) device).schedule();
             return;
         }
         if (deviceName.equalsIgnoreCase("solar")) {
-            Config.save(deviceName + ".txt", time, mode, d3);
+            Config.save(deviceName + ".txt", startTime, endTime, mode, d3);
             device = EchoController.SOLAR;
             ((MySolar) device).schedule();
             return;

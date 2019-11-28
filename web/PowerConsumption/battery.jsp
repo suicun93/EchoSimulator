@@ -47,7 +47,7 @@
          */
         function schedule(device) {
             var startTime = startTimeInput.value;
-            var endTime = startTimeInput.value;
+            var endTime = endTimeInput.value;
             var mode = modeInput.options[modeInput.selectedIndex].value;
             var instantaneous = instantaneousInput.value;
             if (startTime === "") {
