@@ -277,9 +277,12 @@ public class MyBattery extends Battery {
         Calendar startCalendar = Calendar.getInstance();
         startCalendar.set(Calendar.HOUR_OF_DAY, hourStart);
         startCalendar.set(Calendar.MINUTE, minuteStart);
+        startCalendar.set(Calendar.SECOND, 0);
+
         Calendar endCalendar = Calendar.getInstance();
         endCalendar.set(Calendar.HOUR_OF_DAY, hourEnd);
         endCalendar.set(Calendar.MINUTE, minuteEnd);
+        endCalendar.set(Calendar.SECOND, 0);
 
         // Start Timer Initilization.
         if (startPowerConsumption != null) {
