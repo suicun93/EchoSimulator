@@ -27,6 +27,11 @@
                     Time
                 </button>
                 <!--                Time button-->
+                <!--                Schedule EV button-->
+                <button onclick="window.location.href = 'PowerConsumption/battery.jsp'">
+                    Battery
+                </button>
+                <!--                Schedule EV button-->
                 <div class="welcome-banner">
                     <h1>Simulator Controller:</h1>
                     <div class="main-menu-btn">

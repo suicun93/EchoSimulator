@@ -51,8 +51,11 @@ public class MyElectricVehicle extends ElectricVehicle {
         super.setupPropertyMaps();
         // Getter
         addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT);
+        addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
+
         // Setter
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT);
+        addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addSetProperty(EPC_REMAINING_BATTERY_CAPACITY1);
         addSetProperty(EPC_REMAINING_BATTERY_CAPACITY3);
     }
@@ -85,10 +88,10 @@ public class MyElectricVehicle extends ElectricVehicle {
     }
 
     @Override
-    protected boolean setInstallationLocation(byte[] bytes) {
+    protected boolean setInstallationLocation(byte[] edt) {
         try {
             // Announcement at status changed
-            mInsallationLocation[0] = bytes[0];
+            mInsallationLocation[0] = edt[0];
             inform().reqInformInstallationLocation().send();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -177,10 +180,10 @@ public class MyElectricVehicle extends ElectricVehicle {
     }
 
     @Override
-    protected boolean setOperationModeSetting(byte[] bytes) {
+    protected boolean setOperationModeSetting(byte[] edt) {
         try {
             // Announcement at status changed
-            mOperationModeSetting[0] = bytes[0];
+            mOperationModeSetting[0] = edt[0];
             inform().reqInformOperationModeSetting().send();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -225,35 +228,34 @@ public class MyElectricVehicle extends ElectricVehicle {
      */
     @Override
     protected synchronized boolean setProperty(EchoProperty property) {
+        boolean success = super.setProperty(property);
+        if (success) {
+            return success;
+        }
+
         switch (property.epc) {
+            // EPC = 0xD4
+            case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT:
+                System.arraycopy(property.edt, 0, mInstantaneousChargeDischargeCurrent, 0, 2);
+                return true;
 
-            case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT:  // EPC = 0xD4
-                if (property.edt.length == 2) {
-                    System.arraycopy(property.edt, 0,
-                            mInstantaneousChargeDischargeCurrent, 0, 2);
-                    super.setProperty(property);
-                    return true;
-                } else {
-                    return super.setProperty(property);
-                }
+            // EPC = 0xD3
+            case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY:
+                System.arraycopy(property.edt, 0, mInstantaneousChargeDischargeElectricEnergy, 0, 4);
+                return true;
 
-            case EPC_REMAINING_BATTERY_CAPACITY1:                      // EPC = 0xE2
-                if (property.edt.length == 4) {
-                    System.arraycopy(property.edt, 0,
-                            mRemainingBatteryCapacity1, 0, 4);
-                    super.setProperty(property);
-                    return true;
-                } else {
-                    return super.setProperty(property);
-                }
+            // EPC = 0xE2
+            case EPC_REMAINING_BATTERY_CAPACITY1:
+                System.arraycopy(property.edt, 0, mRemainingBatteryCapacity1, 0, 4);
+                return true;
 
-            case EPC_REMAINING_BATTERY_CAPACITY3:                      // EPC = 0xE4
-                mRemainingBatteryCapacity3[0] = property.edt[0];
-                super.setProperty(property);
+            // EPC = 0xE4
+            case EPC_REMAINING_BATTERY_CAPACITY3:
+                System.arraycopy(property.edt, 0, mRemainingBatteryCapacity3, 0, 1);
                 return true;
 
             default:
-                return super.setProperty(property);
+                return false;
         }
     }
 
@@ -265,5 +267,9 @@ public class MyElectricVehicle extends ElectricVehicle {
     @Override
     protected byte[] getMeasuredInstantaneousChargeDischargeElectricEnergy() {
         return mInstantaneousChargeDischargeElectricEnergy;
+    }
+
+    public void schedule() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
