@@ -5,6 +5,7 @@ import Common.Convert;
 import Model.MyDeviceObject.Operation;
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.device.housingfacilities.Battery;
+import static com.sonycsl.echo.eoj.device.housingfacilities.Battery.EPC_REMAINING_STORED_ELECTRICITY1;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -250,6 +251,7 @@ public class MyBattery extends Battery {
     }
 
     private int second = 0;
+    private Timer increaseE2;
 
     public void schedule() throws Exception {
         // Load config
@@ -275,6 +277,9 @@ public class MyBattery extends Battery {
         if (batterySchedule != null) {
             batterySchedule.cancel();
         }
+        if (increaseE2 != null) {
+            increaseE2.cancel();
+        }
         batterySchedule = new Timer();
         batterySchedule.schedule(new TimerTask() {
             @Override
@@ -284,12 +289,12 @@ public class MyBattery extends Battery {
                 setOperationModeSetting(mode);
                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.toByteArray(d3)));
 
-                // Continue Loop
+                // Get D0, E2
                 int d0 = Convert.fromByteArray(mRatedElectricEnergy);
                 int firstE2 = Convert.fromByteArray(getRemainingStoredElectricity1());
-                
+
                 // Loop every second
-                Timer increaseE2 = new Timer();
+                increaseE2 = new Timer();
                 int delay = 0;
                 int period = 1000;
                 second = 0;
@@ -302,17 +307,16 @@ public class MyBattery extends Battery {
                         setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.toByteArray((int) currentE2)));
 
                         if (currentE2 >= d0) {
+                            // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
+                            setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, mRatedElectricEnergy)); // 0xE2 = 0xD0
+                            setOperationModeSetting(new byte[]{(byte) 0x44});                                       // 0xDA = 0x44.
+                            // Log and cancel
+                            int e2 = Convert.fromByteArray(getRemainingStoredElectricity1());
+                            System.out.println("Finish E2 = " + e2);
                             increaseE2.cancel();
                         }
                     }
                 }, delay, period);
-
-                // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
-                int e2 = Convert.fromByteArray(getRemainingStoredElectricity1());
-                if (e2 >= d0) {
-                    setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, mRatedElectricEnergy));
-                    setOperationModeSetting(new byte[]{(byte) 0x44});
-                }
             }
         }, calendar.getTime());
     }
