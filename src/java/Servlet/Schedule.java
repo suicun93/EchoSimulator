@@ -43,7 +43,7 @@ public class Schedule extends HttpServlet {
             out = response.getWriter();
 
             String[] params = paramsRequest.split("\\,");
-            if (params.length != 4) {
+            if (params.length != 5) {
                 out.print("Not enough param: " + paramsRequest);
                 return;
             }

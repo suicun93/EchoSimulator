@@ -17,6 +17,9 @@
         Start: <br>
         <input type="time" id="startTime" value="" /><br><br>
 
+        End: <br>
+        <input type="time" id="endTime" value="" /><br><br>
+
         Mode: <br>
         <select id="mode">
             <option value="0x42" selected="selected">Charge</option>
@@ -35,6 +38,7 @@
         const STATE_READY = 4;
         const STATUS_OK = 200;
         var startTimeInput = document.getElementById("startTime");
+        var endTimeInput = document.getElementById("endTime");
         var modeInput = document.getElementById("mode");
         var instantaneousInput = document.getElementById("instantaneous");
 
@@ -42,13 +46,19 @@
          * @param {String} device 
          */
         function schedule(device) {
-            var time = startTimeInput.value;
+            var startTime = startTimeInput.value;
+            var endTime = startTimeInput.value;
             var mode = modeInput.options[modeInput.selectedIndex].value;
             var instantaneous = instantaneousInput.value;
-            if (time === "") {
-                window.alert("Enter Time");
+            if (startTime === "") {
+                window.alert("Enter Start Time");
                 return;
             }
+            if (endTime === "") {
+                window.alert("Enter End Time");
+                return;
+            }
+
             if (instantaneous === "") {
                 window.alert("Enter Instantaneous Electric Energy");
                 return;
@@ -58,7 +68,6 @@
                 window.alert("Enter Instantaneous Electric Energy > 0");
                 return;
             }
-            console.log(time + " " + mode + " " + instantaneous);
 
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open('POST', "../Schedule", true);
@@ -75,7 +84,7 @@
                     window.alert("Connection failed: " + xmlHttp.status);
                 }
             };
-            xmlHttp.send(device + "," + time + "," + mode + "," + instantaneous);
+            xmlHttp.send(device + "," + startTime + "," + endTime + "," + mode + "," + instantaneous);
         }
     </script>
 </html>
