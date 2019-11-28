@@ -8,6 +8,10 @@
         <servlet-name>Time</servlet-name>
         <servlet-class>Servlet.Time</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Schedule</servlet-name>
+        <servlet-class>Servlet.Schedule</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Start</servlet-name>
         <url-pattern>/Start</url-pattern>
@@ -27,6 +31,10 @@
     <display-name>
         Máy ảo, EV, Battery, Solar, Light, các kiểu con đà điểu.
     </display-name>
+    <servlet-mapping>
+        <servlet-name>Schedule</servlet-name>
+        <url-pattern>/Schedule</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             5

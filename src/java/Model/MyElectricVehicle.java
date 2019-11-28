@@ -268,4 +268,8 @@ public class MyElectricVehicle extends ElectricVehicle {
     protected byte[] getMeasuredInstantaneousChargeDischargeElectricEnergy() {
         return mInstantaneousChargeDischargeElectricEnergy;
     }
+
+    public void schedule() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

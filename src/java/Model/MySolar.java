@@ -141,4 +141,8 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                 return false;
         }
     }
+
+    public void schedule() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
