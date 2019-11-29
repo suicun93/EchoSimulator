@@ -9,82 +9,76 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="stylesheet" href="../css/bulma.min.css">
+        <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/battery.css">
         <title>Solar Consumption Schedule</title>
     </head>
     <body>
-        <h1>Solar Consumption Schedule</h1><br>
+        <div class="bg-color">
+            <section class="header">
+                <div class="container">
+                    <div></div>
+                    <h1 class="head-title">EV Consumption Configuration</h1>
+                </div>
+            </section>
+            <section class="content">
+                <div class="container">
+                    <div class="columns">
+                        <div class="main-menu column is-8 is-offset-2">
 
-        Start: <br>
-        <input type="time" id="startTime" value="" /><br><br>
+                            <div class="menu-form column is-6 is-offset-3">
+                                <div class="field">
+                                    <label class="label">Start Time</label>
+                                    <div class="control">
+                                        <input class="input" id="startTime" type="time" required>
+                                    </div>
+                                    <p class="help is-danger" id="start-time-invalid-mess" style="display: none">This value is required!</p>
 
-        End: <br>
-        <input type="time" id="endTime" value="" /><br><br>
+                                </div>
+                                <div class="field">
+                                    <label class="label">End Time</label>
+                                    <div class="control">
+                                        <input class="input" id="endTime" type="time" required>
+                                    </div>
+                                    <p class="help is-danger" id="end-time-invalid-mess" style="display: none">This value is required!</p>
 
-        Mode: <br>
-        <select id="mode">
-            <option value="0x42" selected="selected">Charge</option>
-            <option value="0x41">Rapid Charge</option>
-            <option value="0x44">Stand By</option>
-        </select> <br><br>
+                                </div>
+                                <div class="field" style="display:none">
+                                    <label class="label">Mode</label>
+                                    <div class="select">
+                                        <select id="mode"> 
+                                            <option value="0x42" selected="selected">Charge</option>
+                                            <option value="0x41">Rapid Charge</option>
+                                            <option value="0x44">Stand By</option>
+                                            <select >
 
-        Instantaneous Electric Energy: <br>
-        <input type="number"  id="instantaneous" min="1" max="1000" />W<br><br>
-
-        <input type="submit" value="Schedule" onclick="schedule('solar')"/>
+                                            </select> <br><br>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Instantaneous Electric Energy</label>
+                                    <div class="control">
+                                        <input class="input" type="number"  id="instantaneous" min="1" max="999999999" placeholder="Unit: W" required>
+                                    </div>
+                                    <p class="help is-danger" id="instantaneous-value-mess" style="display: none">This value is required and must be greater than 0 and smaller than 999999999</p>
+                                </div>
+                                <div class="field is-grouped">
+                                    <div class="control">
+                                        <button class="button is-primary is-outlined" type="submit" onclick="schedule('solar')">Schedule</button>
+                                    </div>
+                                    <div class="control">
+                                        <button class="button is-danger is-outlined" t onclick="window.location.href = '/EchoSimulator'">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </body>
-    <script>
-        const INTERVAL_TIME = 15000;
-        const TIME_OUT = 1000;
-        const STATE_READY = 4;
-        const STATUS_OK = 200;
-        var startTimeInput = document.getElementById("startTime");
-        var endTimeInput = document.getElementById("endTime");
-        var modeInput = document.getElementById("mode");
-        var instantaneousInput = document.getElementById("instantaneous");
-
-        /**
-         * @param {String} device 
-         */
-        function schedule(device) {
-            var startTime = startTimeInput.value;
-            var endTime = endTimeInput.value;
-            var mode = modeInput.options[modeInput.selectedIndex].value;
-            var instantaneous = instantaneousInput.value;
-            if (startTime === "") {
-                window.alert("Enter Start Time");
-                return;
-            }
-            if (endTime === "") {
-                window.alert("Enter End Time");
-                return;
-            }
-
-            if (instantaneous === "") {
-                window.alert("Enter Instantaneous Electric Energy");
-                return;
-            }
-
-            if (parseInt(instantaneous) <= 0) {
-                window.alert("Enter Instantaneous Electric Energy > 0");
-                return;
-            }
-
-            var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open('POST', "../Schedule", true);
-            xmlHttp.setRequestHeader("Content-Type", "text/html");
-            xmlHttp.onload = () => {
-                if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
-                    var data = xmlHttp.responseText;
-                    if (data === "success") {
-                        window.alert("success");
-                    } else {
-                        window.alert("Failed: " + data);
-                    }
-                } else {
-                    window.alert("Connection failed: " + xmlHttp.status);
-                }
-            };
-            xmlHttp.send(device + "," + startTime + "," + endTime + "," + mode + "," + instantaneous);
-        }
+    <script src="../js/schedule.js">
     </script>
 </html>

@@ -36,18 +36,22 @@
                                         <img src="img/car.png" alt="Electric Vehicle">
                                     </div>
                                     <div class="device-group-btn column is-7">
-                                        <button class ="button is-primary is-rounded" id="startEVBtn" onclick="enable('ev')"
+                                        <button class ="button is-success is-rounded" id="startEVBtn" onclick="enable('ev')"
                                                 <% if (EchoController.contains("ev")) {
                                                 %>disabled<%
                                                     }
                                                 %>>Start EV</button>
-                                        <button class ="button is-rounded is-danger" type="button" id="stopEVBtn" value="Stop EV" onclick="disable('ev')"
+                                        <button class ="button is-rounded is-warning" type="button" id="stopEVBtn" value="Stop EV" onclick="disable('ev')"
                                                 <% if (!EchoController.contains("ev")) {
                                                 %>disabled<%
                                                     }
                                                 %>
                                                 >Stop EV</button>
-                                        <button class="button is-info" onclick="window.location.href = 'PowerConsumption/ev.jsp'">Configuration</button>
+                                                <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/ev.jsp'" id="ev-config-btn"
+                                                        <% if (!EchoController.contains("ev")) {
+                                                %>disabled<%
+                                                    }
+                                                %>>Configuration</button>
                                     </div>
                                 </div>
                                 <div class="device column columns is-4 is-offset-2">
@@ -55,18 +59,22 @@
                                         <img src="img/battery.png" alt="Battery">
                                     </div>
                                     <div class="device-group-btn column is-7">
-                                        <button class ="button is-primary is-rounded" id="startBatteryBtn" onclick="enable('battery')"
+                                        <button class ="button is-success is-rounded" id="startBatteryBtn" onclick="enable('battery')"
                                                 <% if (EchoController.contains("battery")) {
                                                 %>disabled<%
                                                     }
                                                 %>>Start Battery</button>
-                                        <button class ="button is-rounded is-danger " type="button" id="stopBatteryBtn" value="Stop Battery" onclick="disable('battery')"
+                                        <button class ="button is-rounded is-warning " type="button" id="stopBatteryBtn" value="Stop Battery" onclick="disable('battery')"
                                                 <% if (!EchoController.contains("battery")) {
                                                 %>disabled<%
                                                     }
                                                 %>
                                                 >Stop Battery</button>
-                                        <button class="button is-info" onclick="window.location.href = 'PowerConsumption/battery.jsp'">Configuration</button>
+                                        <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/battery.jsp'" id="batt-config-btn"
+                                                <% if (!EchoController.contains("battery")) {
+                                                %>disabled<%
+                                                    }
+                                                %>>Configuration</button>
                                     </div>
                                 </div>
                             </div>
@@ -76,18 +84,23 @@
                                         <img src="img/sun.png" alt="Solar Energy">
                                     </div>
                                     <div class="device-group-btn column is-7">
-                                        <button class ="button is-primary  is-rounded" id="startSolarBtn" onclick="enable('solar')"
+                                        <button class ="button is-success  is-rounded" id="startSolarBtn" onclick="enable('solar')"
                                                 <% if (EchoController.contains("solar")) {
                                                 %>disabled<%
                                                     }
                                                 %>>Start Solar</button>
-                                        <button class ="button is-rounded is-danger" type="button" id="stopSolarBtn" value="Stop Solar" onclick="disable('solar')"
+                                        <button class ="button is-rounded is-warning" type="button" id="stopSolarBtn" value="Stop Solar" onclick="disable('solar')"
                                                 <% if (!EchoController.contains("solar")) {
                                                 %>disabled<%
                                                     }
                                                 %>
                                                 >Stop Solar</button>
-                                        <button class="button is-info" onclick="window.location.href = 'PowerConsumption/solar.jsp'">Configuration</button>
+                                        <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/solar.jsp'" id="solar-config-btn"
+                                                <% if (!EchoController.contains("solar")) {
+                                                %>disabled<%
+                                                    }
+                                                %>
+                                                >Configuration</button>
                                     </div>
                                 </div>
                                 <div class="device columns column is-4 is-offset-0 is-offset-2">
@@ -95,18 +108,17 @@
                                         <img src="img/light.png" alt="Light">
                                     </div>
                                     <div class="device-group-btn column is-7">
-                                        <button class ="button is-primary  is-rounded" id="startLightBtn" value="Start Light" onclick="enable('light')"
+                                        <button class ="button is-success  is-rounded" id="startLightBtn" value="Start Light" onclick="enable('light')"
                                                 <% if (EchoController.contains("light")) {
                                                 %>disabled<%
                                                     }
                                                 %>>Start Light</button>
-                                        <button class ="button is-rounded is-danger " type="button" id="stopLightBtn" value="Stop Light" onclick="disable('light')"
+                                        <button class ="button is-rounded is-warning " type="button" id="stopLightBtn" value="Stop Light" onclick="disable('light')"
                                                 <% if (!EchoController.contains("light")) {
                                                 %>disabled<%
                                                     }
                                                 %>
                                                 >Stop Light</button>
-                                        <button class="button is-info">Configuration</button>
                                     </div>
                                 </div>
                             </div>
@@ -126,10 +138,13 @@
         const STATUS_OK = 200;
         var EVStart = document.getElementById('startEVBtn');
         var EVStop = document.getElementById('stopEVBtn');
+        var evConfigBtn = document.getElementById('ev-config-btn')
         var BatteryStart = document.getElementById('startBatteryBtn');
         var BatteryStop = document.getElementById('stopBatteryBtn');
+        var battConfigBtn = document.getElementById('batt-config-btn')
         var SolarStart = document.getElementById('startSolarBtn');
         var SolarStop = document.getElementById('stopSolarBtn');
+        var SolarConfigBtn = document.getElementById("solar-config-btn");
         var LightStart = document.getElementById('startLightBtn');
         var LightStop = document.getElementById('stopLightBtn');
 
@@ -146,9 +161,11 @@
                 if (enable) {
                     EVStart.disabled = true;
                     EVStop.disabled = false;
+                    evConfigBtn.disabled = false;
                 } else {
                     EVStart.disabled = false;
                     EVStop.disabled = true;
+                    evConfigBtn.disabled = true;
                 }
             }
 
@@ -157,9 +174,11 @@
                 if (enable) {
                     BatteryStart.disabled = true;
                     BatteryStop.disabled = false;
+                    battConfigBtn.disabled = false;
                 } else {
                     BatteryStart.disabled = false;
                     BatteryStop.disabled = true;
+                    battConfigBtn.disabled = true;
                 }
             }
 
@@ -168,9 +187,11 @@
                 if (enable) {
                     SolarStart.disabled = true;
                     SolarStop.disabled = false;
+                    SolarConfigBtn.disabled = false;
                 } else {
                     SolarStart.disabled = false;
                     SolarStop.disabled = true;
+                    SolarConfigBtn.disabled = true;
                 }
             }
 
