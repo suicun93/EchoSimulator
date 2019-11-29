@@ -269,8 +269,8 @@ public class MyElectricVehicle extends ElectricVehicle {
         return mInstantaneousChargeDischargeElectricEnergy;
     }
 
-    private int second = 0;
     private Timer increaseE2;
+    private float currentE2;
 
     public void schedule() throws Exception {
         if (!EchoController.contains("ev")) {
@@ -325,14 +325,13 @@ public class MyElectricVehicle extends ElectricVehicle {
 
                 // Get D0, E2
                 int d0 = Convert.byteArrayToInt(getUsedCapacity1());
-                int firstE2 = Convert.byteArrayToInt(getRemainingBatteryCapacity1());
-                System.out.println("\n\nEV Charging Started: E2 = " + firstE2);
+                currentE2 = Convert.byteArrayToInt(getRemainingBatteryCapacity1());
+                System.out.println("\n\nEV Charging Started: E2 = " + currentE2);
 
                 // Loop every second
                 int delay = 0;
                 int period = 1000;
                 long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
-                second = 0;
                 if (increaseE2 != null) {
                     increaseE2.cancel();
                 }
@@ -340,8 +339,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                 increaseE2.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
-                        second++;
-                        float currentE2 = firstE2 + ((float) d3 / secondInHour) * second;
+                        currentE2 = currentE2 + ((float) d3 / secondInHour);
                         System.out.println("EV Second " + Convert.getCurrentTime() + ", E2 = " + currentE2);
                         setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray((int) currentE2)));
 

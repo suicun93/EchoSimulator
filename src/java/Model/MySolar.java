@@ -156,8 +156,8 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     }
 
     // My challenge
-    private int second = 0;
     private Timer increaseE1;
+    private float currentE1;
 
     public void schedule() throws Exception {
         if (!EchoController.contains("solar")) {
@@ -207,14 +207,13 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray(e0)));
 
                 // Get E1
-                int firstE1 = Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated());
-                System.out.println("\n\nSolar Charging Started: E1 = " + firstE1);
+                currentE1 = Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated());
+                System.out.println("\n\nSolar Charging Started: E1 = " + currentE1);
 
                 // Loop every second
                 int delay = 0;
                 int period = 1000;
                 long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
-                second = 0;
                 if (increaseE1 != null) {
                     increaseE1.cancel();
                 }
@@ -222,8 +221,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                 increaseE1.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
-                        second++;
-                        float currentE1 = firstE1 + ((float) e0 / secondInHour) * second;
+                        currentE1 = currentE1 + ((float) e0 / secondInHour);
                         System.out.println("Solar Second " + Convert.getCurrentTime() + ", E1 = " + currentE1);
                         setProperty(new EchoProperty(EPC_MEASURED_CUMULATIVE_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray((int) currentE1)));
                     }

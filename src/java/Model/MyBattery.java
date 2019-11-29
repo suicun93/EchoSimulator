@@ -244,8 +244,8 @@ public class MyBattery extends Battery {
         return mInstantaneousChargeDischargeElectricEnergy;
     }
 
-    private int second = 0;
     private Timer increaseE2;
+    private float currentE2;
 
     public void schedule() throws Exception {
         if (!EchoController.contains("battery")) {
@@ -300,14 +300,13 @@ public class MyBattery extends Battery {
 
                 // Get D0, E2
                 int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
-                int firstE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
-                System.out.println("\n\nBattery Charging Started: E2 = " + firstE2);
+                currentE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
+                System.out.println("\n\nBattery Charging Started: E2 = " + currentE2);
 
                 // Loop every second
                 int delay = 0;
                 int period = 1000;
                 long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
-                second = 0;
                 if (increaseE2 != null) {
                     increaseE2.cancel();
                 }
@@ -315,9 +314,8 @@ public class MyBattery extends Battery {
                 increaseE2.scheduleAtFixedRate(new TimerTask() {
                     @Override
                     public void run() {
-                        second++;
-                        float currentE2 = firstE2 + ((float) d3 / secondInHour) * second;
-                        System.out.println("Battery Second " + Convert.getCurrentTime() + ", E2 = " + currentE2);
+                        currentE2 = currentE2 + ((float) d3 / secondInHour);
+                        System.out.println("Battery Time " + Convert.getCurrentTime() + ", E2 = " + currentE2);
                         setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
 
                         if (currentE2 >= d0) {
