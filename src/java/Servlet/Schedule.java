@@ -55,9 +55,9 @@ public class Schedule extends HttpServlet {
             setup(deviceName, startTime, endTime, mode, d3);
             out.print("success");
         } catch (Exception ex) {
-            System.out.println(Schedule.class.getName() + ex.getMessage());
+            System.out.println(Schedule.class.getName() + " " + ex.getMessage());
             if (out != null) {
-                out.print(Schedule.class.getName() + ex.getMessage());
+                out.print(Schedule.class.getName() + " " + ex.getMessage());
             }
         }
     }
@@ -156,5 +156,4 @@ public class Schedule extends HttpServlet {
         }
         throw new Exception("No device");
     }
-
 }

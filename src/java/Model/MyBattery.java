@@ -2,6 +2,7 @@ package Model;
 
 import Common.Config;
 import Common.Convert;
+import Main.EchoController;
 import Model.MyDeviceObject.Operation;
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.device.housingfacilities.Battery;
@@ -98,9 +99,9 @@ public class MyBattery extends Battery {
         try {
             // Announcement at status change
             mOperationStatus[0] = edt[0];
-//            inform().reqInformOperationStatus().send();
+            inform().reqInformOperationStatus().send();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Battery setOperationStatus: " + ex.getMessage());
         }
         return true;
     }
@@ -110,9 +111,9 @@ public class MyBattery extends Battery {
         try {
             // Announcement at status change
             mInsallationLocation[0] = edt[0];
-//            inform().reqInformOperationStatus().send();
+            inform().reqInformOperationStatus().send();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Battery setInstallationLocation: " + ex.getMessage());
         }
         return true;
     }
@@ -157,9 +158,9 @@ public class MyBattery extends Battery {
         try {
             // Announcement at status change
             mOperationModeSetting[0] = edt[0];
-//            inform().reqInformOperationModeSetting().send();
+            inform().reqInformOperationModeSetting().send();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Battery setOperationModeSetting: " + ex.getMessage());
         }
         return true;
     }
@@ -255,6 +256,10 @@ public class MyBattery extends Battery {
     private Timer increaseE2;
 
     public void schedule() throws Exception {
+        if (!EchoController.contains("battery")) {
+            throw new Exception("Battery did not run yet.");
+        }
+
         // Load config
         String paramString = Config.load("battery.txt");
         String[] params = paramString.split("\\,");
@@ -344,6 +349,11 @@ public class MyBattery extends Battery {
         endPowerConsumption.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    System.out.println(ex.getMessage());
+                }
                 if (increaseE2 != null) {
                     increaseE2.cancel();
                 }
