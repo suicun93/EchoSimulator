@@ -1,0 +1,36 @@
+$menu-bg-color:#ffffffdd;
+$border-radius: 5px;
+.columns{
+    margin: 0;
+}
+.columns:not(:last-child) {
+    margin-bottom: 0;
+}
+.columns:last-child{
+    margin: 0;
+}
+.content{
+    text-align: center;
+    h1{
+        padding-top: 30vh;
+        font-weight: 600;
+        color: white;
+        font-size: 4vw;
+    }
+    .device{
+        background: $menu-bg-color;
+        border-radius: $border-radius;
+        margin-bottom: 1rem;
+        margin-right: 1rem;
+        img{
+            max-width: 8rem;
+        }
+        button{
+            min-width: 7rem;
+            margin-bottom: 0.5rem;
+        }
+        .device-group-btn :last-child{
+            margin-top:1rem;
+        }
+    }
+}

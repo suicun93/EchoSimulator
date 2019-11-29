@@ -1,0 +1,30 @@
+.columns {
+  margin: 0; }
+
+.columns:not(:last-child) {
+  margin-bottom: 0; }
+
+.columns:last-child {
+  margin: 0; }
+
+.content {
+  text-align: center; }
+  .content h1 {
+    padding-top: 30vh;
+    font-weight: 600;
+    color: white;
+    font-size: 4vw; }
+  .content .device {
+    background: #ffffffdd;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    margin-right: 1rem; }
+    .content .device img {
+      max-width: 8rem; }
+    .content .device button {
+      min-width: 7rem;
+      margin-bottom: 0.5rem; }
+    .content .device .device-group-btn :last-child {
+      margin-top: 1rem; }
+
+/*# sourceMappingURL=simulator-page.css.map */
