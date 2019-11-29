@@ -6,7 +6,6 @@ import Main.EchoController;
 import Model.MyDeviceObject.Operation;
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.device.housingfacilities.Battery;
-import static com.sonycsl.echo.eoj.device.housingfacilities.Battery.EPC_REMAINING_STORED_ELECTRICITY1;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -33,11 +32,11 @@ public class MyBattery extends Battery {
     // Private properties
     private final byte[] mRatedElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x0B, (byte) 0xB8};                                   // EPC = 0xD0 (Wh)  3000
     private final byte[] mInstantaneousChargeDischargeElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x64};            // EPC = 0xD3 (W)   3600
-    private final byte[] mInstantaneousChargeDischargeCurrent = {(byte) 0x00, (byte) 0x92};                                             // EPC = 0xD4 (A)
+//    private final byte[] mInstantaneousChargeDischargeCurrent = {(byte) 0x00, (byte) 0x92};                                           // EPC = 0xD4 (A)
     private final byte[] mOperationModeSetting = {(byte) 0x44};                                                                         // EPC = 0xDA Discharging
     private final byte[] mRemainingStoredElectricity1 = {(byte) 0x00, (byte) 0x00, (byte) 0x09, (byte) 0xC4};                           // EPC = 0xE2 (Wh)  2500
     private final byte[] mRemainingStoredElectricity2 = {(byte) 0x00, (byte) 0x93};                                                     // EPC = 0xE3 (0.1Ah)
-    private final byte[] mRemainingStoredElectricity3 = {(byte) 0x60};                                                                  // EPC = 0xE4 (%)
+//    private final byte[] mRemainingStoredElectricity3 = {(byte) 0x60};                                                                // EPC = 0xE4 (%)
     private final byte[] mBatteryType = {(byte) 0x01};                                                                                  // EPC = 0xE6
     private Timer startPowerConsumption, endPowerConsumption;
 
@@ -67,15 +66,13 @@ public class MyBattery extends Battery {
     protected void setupPropertyMaps() {
         super.setupPropertyMaps();
         // Getter
-//        addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT);
         addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addGetProperty(EPC_RATED_ELECTRIC_ENERGY);
 
         // Setter
-//        addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT);
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addSetProperty(EPC_REMAINING_STORED_ELECTRICITY1);
-        addSetProperty(EPC_REMAINING_STORED_ELECTRICITY3);
+//        addSetProperty(EPC_REMAINING_STORED_ELECTRICITY3);
 //        addSetProperty(EPC_RATED_ELECTRIC_ENERGY);
     }
 
@@ -177,7 +174,11 @@ public class MyBattery extends Battery {
 
     @Override
     protected byte[] getRemainingStoredElectricity3BatteryStateOfHealth() {
-        return mRemainingStoredElectricity3;
+        // e4 = e2/d0 * 100%
+        int e2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
+        int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
+        int percent = (int) ((float) e2 / d0) * 100;
+        return new byte[]{Convert.intToByte(percent)};
     }
 
     @Override
@@ -219,20 +220,15 @@ public class MyBattery extends Battery {
                 System.arraycopy(property.edt, 0, mInstantaneousChargeDischargeElectricEnergy, 0, 4);
                 return true;
 
-//            // EPC = 0xD4 đạo hàm của E3
-//            case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT:
-//                System.arraycopy(property.edt, 0, mInstantaneousChargeDischargeCurrent, 0, 2);
-//                return true;
             // EPC = 0xE2 lượng điện hiện thời
             case EPC_REMAINING_STORED_ELECTRICITY1:
                 System.arraycopy(property.edt, 0, mRemainingStoredElectricity1, 0, 4);
                 return true;
 
-            // EPC = 0xE4 lượng điện hiện thời %
-            case EPC_REMAINING_STORED_ELECTRICITY3:
-                System.arraycopy(property.edt, 0, mRemainingStoredElectricity3, 0, 1);
-                return true;
-
+//            // EPC = 0xE4 lượng điện hiện thời %
+//            case EPC_REMAINING_STORED_ELECTRICITY3:
+//                System.arraycopy(property.edt, 0, mRemainingStoredElectricity3, 0, 1);
+//                return true;
             default:
                 return false;
         }
@@ -243,10 +239,6 @@ public class MyBattery extends Battery {
         return mRatedElectricEnergy;
     }
 
-//    @Override
-//    protected byte[] getMeasuredInstantaneousChargeDischargeCurrent() {
-//        return mInstantaneousChargeDischargeCurrent;
-//    }
     @Override
     protected byte[] getMeasuredInstantaneousChargeDischargeElectricEnergy() {
         return mInstantaneousChargeDischargeElectricEnergy;
@@ -307,9 +299,9 @@ public class MyBattery extends Battery {
                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(d3)));
 
                 // Get D0, E2
-                int d0 = Convert.byteArrayToInt(mRatedElectricEnergy);
+                int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
                 int firstE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
-                System.out.println("Charging Start: E2 = " + firstE2);
+                System.out.println("Battery Charging Started: E2 = " + firstE2);
 
                 // Loop every second
                 int delay = 0;
@@ -325,15 +317,15 @@ public class MyBattery extends Battery {
                     public void run() {
                         second++;
                         float currentE2 = firstE2 + ((float) d3 / secondInHour) * second;
-                        System.out.println("Second " + second + ", E2 = " + currentE2);
+                        System.out.println("Battery Second " + Convert.getCurrentTime() + ", E2 = " + currentE2);
                         setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
 
                         if (currentE2 >= d0) {
                             // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
-                            setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, mRatedElectricEnergy)); // 0xE2 = 0xD0
+                            setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, getRatedElectricEnergy())); // 0xE2 = 0xD0
                             setOperationModeSetting(new byte[]{(byte) 0x44});                                       // 0xDA = 0x44.
                             // Log and cancel
-                            System.out.println("Charge Full E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
+                            System.out.println("Battery Charged Full E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
                             increaseE2.cancel();
                         }
                     }
@@ -350,7 +342,7 @@ public class MyBattery extends Battery {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(500);
                 } catch (InterruptedException ex) {
                     System.out.println(ex.getMessage());
                 }
@@ -360,7 +352,7 @@ public class MyBattery extends Battery {
                 // If 0xE2 >= 0xD0,  0xDA = 0x44.
                 setOperationModeSetting(new byte[]{(byte) 0x44});                                       // 0xDA = 0x44.
                 // Log and cancel
-                System.out.println("Charging End E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
+                System.out.println("Battery Charging Ends E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
             }
         }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
     }
