@@ -350,7 +350,7 @@ public class MyBattery extends Battery {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException ex) {
                     System.out.println(ex.getMessage());
                 }

@@ -47,7 +47,7 @@
                                                     }
                                                 %>
                                                 >Stop EV</button>
-                                        <button class="button is-info">Configuration</button>
+                                        <button class="button is-info" onclick="window.location.href = 'PowerConsumption/ev.jsp'">Configuration</button>
                                     </div>
                                 </div>
                                 <div class="device column columns is-4 is-offset-2">
@@ -87,7 +87,7 @@
                                                     }
                                                 %>
                                                 >Stop Solar</button>
-                                        <button class="button is-info">Configuration</button>
+                                        <button class="button is-info" onclick="window.location.href = 'PowerConsumption/solar.jsp'">Configuration</button>
                                     </div>
                                 </div>
                                 <div class="device columns column is-4 is-offset-0 is-offset-2">
