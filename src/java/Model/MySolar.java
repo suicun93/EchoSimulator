@@ -34,6 +34,16 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     private final byte[] mCumulativeAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x00, (byte) 0x0B, (byte) 0xB8};    // 0xE1 kWh 2500
     private Timer startPowerConsumption, endPowerConsumption;
 
+     @Override
+    public void onNew() {
+        super.onNew();
+        try {
+            schedule();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier

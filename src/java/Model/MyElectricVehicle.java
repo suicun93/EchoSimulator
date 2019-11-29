@@ -43,6 +43,16 @@ public class MyElectricVehicle extends ElectricVehicle {
 //    private final byte[] mRemainingBatteryCapacity3 = {(byte) 0x60};                                                          // EPC = 0xE4 (%) => calculated
     private Timer startPowerConsumption, endPowerConsumption;
 
+     @Override
+    public void onNew() {
+        super.onNew();
+        try {
+            schedule();
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier
