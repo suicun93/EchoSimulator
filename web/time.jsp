@@ -12,7 +12,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" href="css/bulma.min.css">
-        <link rel="stylesheet" href="css/style.css">
         <title>Set up system time</title>
     </head>
     <body>
@@ -24,7 +23,6 @@
                     SET
                 </button>
             </div>
-
         </div>
     </body>
     <script src="js/jquery.js"></script>
