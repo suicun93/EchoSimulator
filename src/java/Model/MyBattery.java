@@ -301,7 +301,7 @@ public class MyBattery extends Battery {
                 // Get D0, E2
                 int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
                 int firstE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
-                System.out.println("Battery Charging Started: E2 = " + firstE2);
+                System.out.println("\n\nBattery Charging Started: E2 = " + firstE2);
 
                 // Loop every second
                 int delay = 0;

@@ -26,11 +26,9 @@ public abstract class MyDeviceObject extends DeviceObject {
         }
         // <editor-fold defaultstate="collapsed" desc="//Skip this">
         public final byte value;
-        public final byte[] array;
 
         Operation(byte operation) {
             this.value = operation;
-            this.array = new byte[]{value};
         }
         // </editor-fold>
     }

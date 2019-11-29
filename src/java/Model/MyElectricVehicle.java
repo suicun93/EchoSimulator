@@ -3,6 +3,7 @@ package Model;
 import Common.Config;
 import Common.Convert;
 import Main.EchoController;
+import Model.MyDeviceObject.Operation;
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.device.housingfacilities.ElectricVehicle;
 import java.io.IOException;
@@ -316,7 +317,7 @@ public class MyElectricVehicle extends ElectricVehicle {
             public void run() {
 
                 // 0x80 = 0x30
-                setOperationStatus(new byte[]{MyDeviceObject.Operation.ON.value});
+                setOperationStatus(new byte[]{Operation.ON.value});
                 // 0xDA = mode
                 setOperationModeSetting(mode);
                 // 0xD3 = d3
@@ -325,7 +326,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                 // Get D0, E2
                 int d0 = Convert.byteArrayToInt(getUsedCapacity1());
                 int firstE2 = Convert.byteArrayToInt(getRemainingBatteryCapacity1());
-                System.out.println("EV Charging Started: E2 = " + firstE2);
+                System.out.println("\n\nEV Charging Started: E2 = " + firstE2);
 
                 // Loop every second
                 int delay = 0;

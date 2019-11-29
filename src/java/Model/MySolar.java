@@ -24,7 +24,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
 
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
-    private final byte[] mOperationStatus = Operation.ON.array;                              // EPC = 0x80
+    private final byte[] mOperationStatus = new byte[]{Operation.OFF.value};              // EPC = 0x80
     private final byte[] mInsallationLocation = {(byte) 0x00};                          // EPC = 0x81
     private final byte[] mFaultStatus = {(byte) 0x42};                                  // EPC = 0x88
     private final byte[] mManufacturerCode = {0, 0, 0};                                 // EPC = 0x8A
@@ -202,13 +202,13 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
             public void run() {
 
                 // 0x80 = 0x30
-                setOperationStatus(Operation.ON.array);
+                setOperationStatus(new byte[]{Operation.ON.value});
                 // 0xE0 = e0
                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray(e0)));
 
                 // Get E1
                 int firstE1 = Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated());
-                System.out.println("Solar Charging Started: E1 = " + firstE1);
+                System.out.println("\n\nSolar Charging Started: E1 = " + firstE1);
 
                 // Loop every second
                 int delay = 0;
@@ -248,7 +248,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                     increaseE1.cancel();
                 }
                 //  0x80 = 0x31.
-                setOperationStatus(Operation.OFF.array);
+                setOperationStatus(new byte[]{Operation.OFF.value});
                 // Log and cancel
                 System.out.println("Solar Charging Ends E1 = " + Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated()));
             }
