@@ -47,9 +47,9 @@ public class Config {
 
             // Save config
             // Linux
-//            try (BufferedWriter writer = new BufferedWriter(new FileWriter("/opt/tomcat/webapps/Simulator/" + fileName))) {
-            // Window
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("/opt/tomcat/webapps/Simulator/" + fileName))) {
+                // Window
+//            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
 
                 writer.write(startTime + "," + endTime + "," + mode + "," + d3);
             }
@@ -61,9 +61,9 @@ public class Config {
     public static String load(String filename) throws Exception {
         try {
             // Linux
-//            byte[] encoded = Files.readAllBytes(Paths.get("/opt/tomcat/webapps/Simulator/" + filename));
+            byte[] encoded = Files.readAllBytes(Paths.get("/opt/tomcat/webapps/Simulator/" + filename));
             // Window        
-            byte[] encoded = Files.readAllBytes(Paths.get(filename));
+//            byte[] encoded = Files.readAllBytes(Paths.get(filename));
             return new String(encoded, StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new Exception(Config.class.getName() + ", Load: " + e.getMessage());
