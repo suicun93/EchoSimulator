@@ -47,7 +47,7 @@ public class Config {
 
             // Save config
             // Linux
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("/opt/tomcat/webapps/Simulator/" + fileName))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("/opt/tomcat/webapps/" + fileName))) {
                 // Window
 //            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
 
@@ -61,7 +61,7 @@ public class Config {
     public static String load(String filename) throws Exception {
         try {
             // Linux
-            byte[] encoded = Files.readAllBytes(Paths.get("/opt/tomcat/webapps/Simulator/" + filename));
+            byte[] encoded = Files.readAllBytes(Paths.get("/opt/tomcat/webapps/" + filename));
             // Window        
 //            byte[] encoded = Files.readAllBytes(Paths.get(filename));
             return new String(encoded, StandardCharsets.UTF_8);
