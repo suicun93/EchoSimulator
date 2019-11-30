@@ -360,6 +360,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                             // Log and cancel
                             System.out.println("EV Charged Full E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
                             increaseE2.cancel();
+                            increaseE2 = null;
                         }
                     }
                 }, delay, period);
@@ -381,6 +382,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                 }
                 if (increaseE2 != null) {
                     increaseE2.cancel();
+                    increaseE2 = null;
                 }
                 // If 0xE2 >= 0xD0,  0xDA = 0x44.
                 setOperationModeSetting(new byte[]{(byte) 0x44});                                       // 0xDA = 0x44.
