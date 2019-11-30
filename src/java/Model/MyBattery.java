@@ -325,6 +325,7 @@ public class MyBattery extends Battery {
                             // Log and cancel
                             System.out.println("Battery Charged Full E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
                             increaseE2.cancel();
+                            increaseE2 = null;
                         }
                     }
                 }, delay, period);
@@ -346,6 +347,7 @@ public class MyBattery extends Battery {
                 }
                 if (increaseE2 != null) {
                     increaseE2.cancel();
+                    increaseE2 = null;
                 }
                 // If 0xE2 >= 0xD0,  0xDA = 0x44.
                 setOperationModeSetting(new byte[]{(byte) 0x44});                                       // 0xDA = 0x44.
