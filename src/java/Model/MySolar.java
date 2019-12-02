@@ -274,9 +274,12 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                 }
                 if (increaseE1 != null) {
                     increaseE1.cancel();
+                    increaseE1 = null;
                 }
                 //  0x80 = 0x31.
                 setOperationStatus(new byte[]{Operation.OFF.value});
+                // 0xE0 = 0
+                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray(0)));
                 // Log and cancel
                 System.out.println("Solar Charging Ends E1 = " + Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated()));
             }
