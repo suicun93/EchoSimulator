@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MyElectricVehicle extends ElectricVehicle {
 
+    public static String name = "ev";
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
     private final byte[] mOperationStatus = {(byte) 0x31};            // EPC = 0x80
@@ -43,7 +44,7 @@ public class MyElectricVehicle extends ElectricVehicle {
 //    private final byte[] mRemainingBatteryCapacity3 = {(byte) 0x60};                                                          // EPC = 0xE4 (%) => calculated
     private Timer startPowerConsumption, endPowerConsumption;
 
-     @Override
+    @Override
     public void onNew() {
         super.onNew();
         try {
@@ -52,7 +53,7 @@ public class MyElectricVehicle extends ElectricVehicle {
             System.out.println(ex.getMessage());
         }
     }
-    
+
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier

@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class MyBattery extends Battery {
 
+    public static String name = "battery";
+
     // The OpenECHO Library is having an error in this parameter's definition
     // This error made me be angry so I want to fix it.
     public static final byte EPC_REMAINING_STORED_ELECTRICITY3

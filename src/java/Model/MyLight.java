@@ -13,6 +13,8 @@ import java.io.IOException;
  */
 public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.GeneralLighting {
 
+    public static String name = "light";
+
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
     private final byte[] mOperationStatus = {(byte) 0x31};                              // EPC = 0x80

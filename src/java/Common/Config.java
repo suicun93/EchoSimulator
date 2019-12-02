@@ -19,6 +19,28 @@ import java.util.Calendar;
  */
 public class Config {
 
+    private static final boolean runOnLinux = true;
+
+    public static String getLink() {
+        if (runOnLinux) {
+            return "/opt/tomcat/webapps/";
+        } else {
+            return "";
+        }
+    }
+
+    public static void save(String fileName, String content) throws Exception {
+
+        try {
+            // Save config
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(getLink() + fileName))) {
+                writer.write(content);
+            }
+        } catch (Exception e) {
+            throw new Exception(Config.class.getName() + ", Save: " + e.getMessage());
+        }
+    }
+
     public static void save(String fileName, String startTime, String endTime, String mode, String d3) throws Exception {
         try {
             // Validate mode
@@ -46,27 +68,20 @@ public class Config {
             calendar.set(Calendar.MINUTE, minute);
 
             // Save config
-            // Linux
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("/opt/tomcat/webapps/" + fileName))) {
-                // Window
-//            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(getLink() + fileName))) {
                 writer.write(startTime + "," + endTime + "," + mode + "," + d3);
             }
         } catch (IOException e) {
-            throw new Exception(Config.class.getName() + ", Save: " + e.getMessage());
+            throw new Exception(Config.class.getName() + ", Save Failed: " + e.getMessage());
         }
     }
 
     public static String load(String filename) throws Exception {
         try {
-            // Linux
-            byte[] encoded = Files.readAllBytes(Paths.get("/opt/tomcat/webapps/" + filename));
-            // Window        
-//            byte[] encoded = Files.readAllBytes(Paths.get(filename));
+            byte[] encoded = Files.readAllBytes(Paths.get(getLink() + filename));
             return new String(encoded, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new Exception(Config.class.getName() + ", Load: " + e.getMessage());
+            throw new Exception(Config.class.getName() + ", Load Failed: " + e.getMessage());
         }
     }
 }

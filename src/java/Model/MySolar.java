@@ -22,6 +22,8 @@ import Model.MyDeviceObject.Operation;
  */
 public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration {
 
+    public static String name = "solar";
+
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
     private final byte[] mOperationStatus = new byte[]{Operation.OFF.value};              // EPC = 0x80
@@ -34,7 +36,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     private final byte[] mCumulativeAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x00, (byte) 0x0B, (byte) 0xB8};    // 0xE1 kWh 2500
     private Timer startPowerConsumption, endPowerConsumption;
 
-     @Override
+    @Override
     public void onNew() {
         super.onNew();
         try {
@@ -43,7 +45,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
             System.out.println(ex.getMessage());
         }
     }
-    
+
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier

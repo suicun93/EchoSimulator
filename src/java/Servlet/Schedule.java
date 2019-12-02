@@ -136,19 +136,19 @@ public class Schedule extends HttpServlet {
     private void setup(String deviceName, String startTime, String endTime, String mode, String d3) throws Exception {
         // Save config and schedule
         DeviceObject device;
-        if (deviceName.equalsIgnoreCase("battery")) {
+        if (deviceName.equalsIgnoreCase(MyBattery.name)) {
             Config.save(deviceName + ".txt", startTime, endTime, mode, d3);
             device = EchoController.BATTERY;
             ((MyBattery) device).schedule();
             return;
         }
-        if (deviceName.equalsIgnoreCase("ev")) {
+        if (deviceName.equalsIgnoreCase(MyElectricVehicle.name)) {
             Config.save(deviceName + ".txt", startTime, endTime, mode, d3);
             device = EchoController.EV;
             ((MyElectricVehicle) device).schedule();
             return;
         }
-        if (deviceName.equalsIgnoreCase("solar")) {
+        if (deviceName.equalsIgnoreCase(MySolar.name)) {
             Config.save(deviceName + ".txt", startTime, endTime, mode, d3);
             device = EchoController.SOLAR;
             ((MySolar) device).schedule();

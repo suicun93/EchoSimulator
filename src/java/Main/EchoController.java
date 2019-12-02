@@ -5,6 +5,7 @@
  */
 package Main;
 
+import Common.Config;
 import Common.Convert;
 import Model.MyBattery;
 import Model.MyElectricVehicle;
@@ -30,6 +31,8 @@ import java.util.ArrayList;
  */
 public class EchoController {
 
+    private static final String CONFIG_FILE = "Config";
+
     // Init nodeProfile, controller, ev, battery, ...
     private static final DefaultNodeProfile NODE_PROFILE = new DefaultNodeProfile();
     public static final MyElectricVehicle EV = new MyElectricVehicle();
@@ -38,6 +41,55 @@ public class EchoController {
     public static final MyLight LIGHT = new MyLight();
 
     public static ArrayList<DeviceObject> listDevice = new ArrayList<>();
+
+    public static void saveConfig() {
+        try {
+            StringBuilder listConfig = new StringBuilder("");
+            for (DeviceObject deviceObject : listDevice) {
+                if (deviceObject instanceof MyBattery) {
+                    listConfig.append(MyBattery.name).append(",");
+                }
+                if (deviceObject instanceof MyElectricVehicle) {
+                    listConfig.append(MyElectricVehicle.name).append(",");
+                }
+                if (deviceObject instanceof MySolar) {
+                    listConfig.append(MySolar.name).append(",");
+                }
+                if (deviceObject instanceof MyLight) {
+                    listConfig.append(MyLight.name).append(",");
+                }
+            }
+            if (listConfig.length() != 0) {
+                listConfig.deleteCharAt(listConfig.length() - 1); // delete ","
+            }
+            Config.save(CONFIG_FILE, listConfig.toString());
+        } catch (Exception ex) {
+            System.out.println("Save Config failed: " + ex.getMessage());
+        }
+    }
+
+    public static void loadConfig() {
+        try {
+            String content = Config.load(CONFIG_FILE);
+            String[] devices = content.split("\\,");
+            for (String device : devices) {
+                if (device.equalsIgnoreCase(MyBattery.name)) {
+                    start(BATTERY);
+                }
+                if (device.equalsIgnoreCase(MyElectricVehicle.name)) {
+                    start(EV);
+                }
+                if (device.equalsIgnoreCase(MySolar.name)) {
+                    start(SOLAR);
+                }
+                if (device.equalsIgnoreCase(MyLight.name)) {
+                    start(LIGHT);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Load config failed: " + e.getMessage());
+        }
+    }
 
     public synchronized static void start(DeviceObject device) throws IOException {
         if (listDevice.contains(device)) {
@@ -53,22 +105,7 @@ public class EchoController {
         }
         addEvent();  // -> Log to debug.
         Echo.start(NODE_PROFILE, listDevice());
-    }
-
-    public static boolean contains(String device) {
-        if (device.equalsIgnoreCase("battery")) {
-            return listDevice.contains(BATTERY);
-        }
-        if (device.equalsIgnoreCase("ev")) {
-            return listDevice.contains(EV);
-        }
-        if (device.equalsIgnoreCase("solar")) {
-            return listDevice.contains(SOLAR);
-        }
-        if (device.equalsIgnoreCase("light")) {
-            return listDevice.contains(LIGHT);
-        }
-        return false;
+        saveConfig();
     }
 
     public static void stop(DeviceObject device) throws IOException {
@@ -81,6 +118,23 @@ public class EchoController {
                 Echo.start(NODE_PROFILE, listDevice());
             }
         }
+        saveConfig();
+    }
+
+    public static boolean contains(String device) {
+        if (device.equalsIgnoreCase(MyBattery.name)) {
+            return listDevice.contains(BATTERY);
+        }
+        if (device.equalsIgnoreCase(MyElectricVehicle.name)) {
+            return listDevice.contains(EV);
+        }
+        if (device.equalsIgnoreCase(MySolar.name)) {
+            return listDevice.contains(SOLAR);
+        }
+        if (device.equalsIgnoreCase(MyLight.name)) {
+            return listDevice.contains(LIGHT);
+        }
+        return false;
     }
 
     // Device Detection

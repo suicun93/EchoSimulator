@@ -13,6 +13,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import Main.EchoController;
+import static Main.EchoController.BATTERY;
+import static Main.EchoController.EV;
+import static Main.EchoController.LIGHT;
+import static Main.EchoController.SOLAR;
+import Model.MyBattery;
+import Model.MyElectricVehicle;
+import Model.MyLight;
+import Model.MySolar;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,23 +46,23 @@ public class Stop extends HttpServlet {
             String deviceName = getParam(request);
             out = response.getWriter();
 
-            if (deviceName.equalsIgnoreCase("battery")) {
-                EchoController.stop(EchoController.BATTERY);
+            if (deviceName.equalsIgnoreCase(MyBattery.name)) {
+                EchoController.stop(BATTERY);
                 out.print("success");
                 return;
             }
-            if (deviceName.equalsIgnoreCase("ev")) {
-                EchoController.stop(EchoController.EV);
+            if (deviceName.equalsIgnoreCase(MyElectricVehicle.name)) {
+                EchoController.stop(EV);
                 out.print("success");
                 return;
             }
-            if (deviceName.equalsIgnoreCase("solar")) {
-                EchoController.stop(EchoController.SOLAR);
+            if (deviceName.equalsIgnoreCase(MySolar.name)) {
+                EchoController.stop(SOLAR);
                 out.print("success");
                 return;
             }
-            if (deviceName.equalsIgnoreCase("light")) {
-                EchoController.stop(EchoController.LIGHT);
+            if (deviceName.equalsIgnoreCase(MyLight.name)) {
+                EchoController.stop(LIGHT);
                 out.print("success");
                 return;
             }
