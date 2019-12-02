@@ -68,6 +68,14 @@
                                         <button class="button is-danger is-outlined" t onclick="window.location.href = '/EchoSimulator'">Cancel</button>
                                     </div>
                                 </div>
+                                <div class="notification is-primary" id="success-msg" style="display: none">
+                                    <button class="delete"></button>
+                                    Set schedule successfully!
+                                </div>
+                                <div class="notification is-danger" id="failed-msg" style="display: none">
+                                    <button class="delete"></button>
+                                    Schedule Failed!
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -77,4 +85,5 @@
     </body>
     <script src="../js/schedule.js">
     </script>
+    <script src="../js/close-message.js"></script>
 </html>

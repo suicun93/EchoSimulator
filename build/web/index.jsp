@@ -12,6 +12,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="css/bulma.min.css"/>
+        <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" href="css/common.css"/>
         <link rel="stylesheet" href="css/simulator-page.css"/>
         <title>Simulator Page</title>
@@ -20,16 +21,26 @@
         <div class="bg-color">
             <section>
                 <div class="container">
-                    <!--                Time button-->
-                    <button onclick="window.location.href = 'time.jsp'">
-                        Time
-                    </button>
-                    <!--                Time button-->
-                    <!--                Schedule EV button-->
-                    <!--                Schedule EV button-->
                     <div class="content">
                         <h1>Simulator Controller:</h1>
                         <div class="main-menu-btn">
+                            <div class="set-time-wrapper">
+                                <input size="16" type="text" readonly
+                                       class="form_datetime input is-rounded is-primary" id="time">
+                                <button class="button is-primary " onclick="setTime()">
+                                    SET
+                                </button>
+
+                                <div class="notification is-primary" id="success-msg" style="display: none">
+                                    <button class="delete"></button>
+                                    Set time successfully!
+                                </div>
+                                <div class="notification is-danger" id="failed-msg" style="display: none">
+                                    <button class="delete"></button>
+                                    Schedule Failed!
+                                </div>
+                            </div>
+
                             <div class="columns">
                                 <div class="device columns column is-4 is-offset-2">
                                     <div class="column is-5">
@@ -47,8 +58,8 @@
                                                     }
                                                 %>
                                                 >Stop EV</button>
-                                                <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/ev.jsp'" id="ev-config-btn"
-                                                        <% if (!EchoController.contains("ev")) {
+                                        <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/ev.jsp'" id="ev-config-btn"
+                                                <% if (!EchoController.contains("ev")) {
                                                 %>disabled<%
                                                     }
                                                 %>>Configuration</button>
@@ -131,11 +142,15 @@
         </div>
 
     </body>
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript">
+                                            $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+    </script>
+    <script src="js/time.js"></script>
+    <script src="js/close-message.js"></script>
+
     <script>
-        const INTERVAL_TIME = 15000;
-        const TIME_OUT = 1000;
-        const STATE_READY = 4;
-        const STATUS_OK = 200;
         var EVStart = document.getElementById('startEVBtn');
         var EVStop = document.getElementById('stopEVBtn');
         var evConfigBtn = document.getElementById('ev-config-btn')
@@ -147,7 +162,7 @@
         var SolarConfigBtn = document.getElementById("solar-config-btn");
         var LightStart = document.getElementById('startLightBtn');
         var LightStop = document.getElementById('stopLightBtn');
-
+        
         /**
          * Update UI
          * @@param {String} device

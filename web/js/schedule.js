@@ -9,6 +9,8 @@ var endTimeMess = document.getElementById("end-time-invalid-mess");
 var modeInput = document.getElementById("mode");
 var instantaneousInput = document.getElementById("instantaneous");
 var instantaneousMess = document.getElementById("instantaneous-value-mess");
+var successMsg = document.getElementById("success-msg");
+var failedMsg = document.getElementById("failed-msg");
 
 /**
  * @param {String} device 
@@ -18,6 +20,7 @@ function schedule(device) {
     var endTime = endTimeInput.value;
     var mode = modeInput.options[modeInput.selectedIndex].value;
     var instantaneous = instantaneousInput.value;
+    
     if (startTime === "") {
         startTimeInput.classList.add("is-danger");
         startTimeMess.style.display = "block";
@@ -51,9 +54,10 @@ function schedule(device) {
         if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
             var data = xmlHttp.responseText;
             if (data === "success") {
-                window.alert("success");
+                successMsg.style.display = "block";
             } else {
-                window.alert("Failed: " + data);
+                failedMsg.innerHTML = "Schedule set failed: \n "+data;
+                failedMsg.style.display = "block";
             }
         } else {
             window.alert("Connection failed: " + xmlHttp.status);
