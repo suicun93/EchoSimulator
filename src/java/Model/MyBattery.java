@@ -17,6 +17,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class MyBattery extends Battery {
 
+    public static String name = "battery";
+
     // The OpenECHO Library is having an error in this parameter's definition
     // This error made me be angry so I want to fix it.
     public static final byte EPC_REMAINING_STORED_ELECTRICITY3
@@ -60,6 +62,22 @@ public class MyBattery extends Battery {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    public void stop() {
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
+            startPowerConsumption = null;
+        }
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+            endPowerConsumption = null;
+        }
+        if (increaseE2 != null) {
+            increaseE2.cancel();
+            increaseE2 = null;
+        }
+
     }
 
     @Override
@@ -254,6 +272,9 @@ public class MyBattery extends Battery {
 
         // Load config
         String paramString = Config.load("battery.txt");
+        if (paramString.isEmpty()) {
+            throw new Exception("Config file " + "Battery" + " is Empty");
+        }
         String[] params = paramString.split("\\,");
         String startTimeStr = params[0];
         String endTimeStr = params[1];

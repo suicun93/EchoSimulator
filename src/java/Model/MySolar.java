@@ -22,6 +22,8 @@ import Model.MyDeviceObject.Operation;
  */
 public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration {
 
+    public static String name = "solar";
+
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
     private final byte[] mOperationStatus = new byte[]{Operation.OFF.value};              // EPC = 0x80
@@ -34,7 +36,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     private final byte[] mCumulativeAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x00, (byte) 0x0B, (byte) 0xB8};    // 0xE1 kWh 2500
     private Timer startPowerConsumption, endPowerConsumption;
 
-     @Override
+    @Override
     public void onNew() {
         super.onNew();
         try {
@@ -43,7 +45,22 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
             System.out.println(ex.getMessage());
         }
     }
-    
+
+    public void stop() {
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
+            startPowerConsumption = null;
+        }
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+            endPowerConsumption = null;
+        }
+        if (increaseE1 != null) {
+            increaseE1.cancel();
+            increaseE1 = null;
+        }
+    }
+
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier
@@ -176,6 +193,9 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
 
         // Load config
         String paramString = Config.load("solar.txt");
+        if (paramString.isEmpty()) {
+            throw new Exception("Config file " + "Solar" + " is Empty");
+        }
         String[] params = paramString.split("\\,");
         String startTimeStr = params[0];
         String endTimeStr = params[1];

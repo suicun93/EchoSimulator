@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MyElectricVehicle extends ElectricVehicle {
 
+    public static String name = "ev";
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
     private final byte[] mOperationStatus = {(byte) 0x31};            // EPC = 0x80
@@ -43,7 +44,7 @@ public class MyElectricVehicle extends ElectricVehicle {
 //    private final byte[] mRemainingBatteryCapacity3 = {(byte) 0x60};                                                          // EPC = 0xE4 (%) => calculated
     private Timer startPowerConsumption, endPowerConsumption;
 
-     @Override
+    @Override
     public void onNew() {
         super.onNew();
         try {
@@ -52,7 +53,23 @@ public class MyElectricVehicle extends ElectricVehicle {
             System.out.println(ex.getMessage());
         }
     }
-    
+
+    public void stop() {
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
+            startPowerConsumption = null;
+        }
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+            endPowerConsumption = null;
+        }
+        if (increaseE2 != null) {
+            increaseE2.cancel();
+            increaseE2 = null;
+        }
+
+    }
+
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier
@@ -289,6 +306,9 @@ public class MyElectricVehicle extends ElectricVehicle {
 
         // Load config
         String paramString = Config.load("ev.txt");
+        if (paramString.isEmpty()) {
+            throw new Exception("Config file " + "EV" + " is Empty");
+        }
         String[] params = paramString.split("\\,");
         String startTimeStr = params[0];
         String endTimeStr = params[1];

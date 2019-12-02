@@ -16,6 +16,14 @@ import Main.EchoController;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import static Main.EchoController.BATTERY;
+import static Main.EchoController.EV;
+import static Main.EchoController.SOLAR;
+import static Main.EchoController.LIGHT;
+import Model.MyBattery;
+import Model.MyElectricVehicle;
+import Model.MyLight;
+import Model.MySolar;
 
 /**
  *
@@ -38,23 +46,23 @@ public class Start extends HttpServlet {
             String deviceName = getParam(request);
             out = response.getWriter();
 
-            if (deviceName.equalsIgnoreCase("battery")) {
-                EchoController.start(EchoController.BATTERY);
+            if (deviceName.equalsIgnoreCase(MyBattery.name)) {
+                EchoController.start(BATTERY);
                 out.print("success");
                 return;
             }
-            if (deviceName.equalsIgnoreCase("ev")) {
-                EchoController.start(EchoController.EV);
+            if (deviceName.equalsIgnoreCase(MyElectricVehicle.name)) {
+                EchoController.start(EV);
                 out.print("success");
                 return;
             }
-            if (deviceName.equalsIgnoreCase("solar")) {
-                EchoController.start(EchoController.SOLAR);
+            if (deviceName.equalsIgnoreCase(MySolar.name)) {
+                EchoController.start(SOLAR);
                 out.print("success");
                 return;
             }
-            if (deviceName.equalsIgnoreCase("light")) {
-                EchoController.start(EchoController.LIGHT);
+            if (deviceName.equalsIgnoreCase(MyLight.name)) {
+                EchoController.start(LIGHT);
                 out.print("success");
                 return;
             }
