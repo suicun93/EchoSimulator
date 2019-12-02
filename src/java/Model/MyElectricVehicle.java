@@ -54,6 +54,22 @@ public class MyElectricVehicle extends ElectricVehicle {
         }
     }
 
+    public void stop() {
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
+            startPowerConsumption = null;
+        }
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+            endPowerConsumption = null;
+        }
+        if (increaseE2 != null) {
+            increaseE2.cancel();
+            increaseE2 = null;
+        }
+
+    }
+
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier
@@ -290,6 +306,9 @@ public class MyElectricVehicle extends ElectricVehicle {
 
         // Load config
         String paramString = Config.load("ev.txt");
+        if (paramString.isEmpty()) {
+            throw new Exception("Config file " + "EV" + " is Empty");
+        }
         String[] params = paramString.split("\\,");
         String startTimeStr = params[0];
         String endTimeStr = params[1];

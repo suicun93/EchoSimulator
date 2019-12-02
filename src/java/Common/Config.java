@@ -19,10 +19,11 @@ import java.util.Calendar;
  */
 public class Config {
 
-    private static final boolean runOnLinux = true;
+    private static final boolean RUNNING_ON_LINUX = true;
+//    private static final boolean RUNNING_ON_LINUX = false;
 
     public static String getLink() {
-        if (runOnLinux) {
+        if (RUNNING_ON_LINUX) {
             return "/opt/tomcat/webapps/";
         } else {
             return "";
@@ -36,7 +37,7 @@ public class Config {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(getLink() + fileName))) {
                 writer.write(content);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new Exception(Config.class.getName() + ", Save: " + e.getMessage());
         }
     }

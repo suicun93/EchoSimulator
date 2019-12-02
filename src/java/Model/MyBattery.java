@@ -64,6 +64,22 @@ public class MyBattery extends Battery {
         }
     }
 
+    public void stop() {
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
+            startPowerConsumption = null;
+        }
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+            endPowerConsumption = null;
+        }
+        if (increaseE2 != null) {
+            increaseE2.cancel();
+            increaseE2 = null;
+        }
+
+    }
+
     @Override
     protected void setupPropertyMaps() {
         super.setupPropertyMaps();
@@ -256,6 +272,9 @@ public class MyBattery extends Battery {
 
         // Load config
         String paramString = Config.load("battery.txt");
+        if (paramString.isEmpty()) {
+            throw new Exception("Config file " + "Battery" + " is Empty");
+        }
         String[] params = paramString.split("\\,");
         String startTimeStr = params[0];
         String endTimeStr = params[1];

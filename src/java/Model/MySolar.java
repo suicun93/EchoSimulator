@@ -46,6 +46,21 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
         }
     }
 
+    public void stop() {
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
+            startPowerConsumption = null;
+        }
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+            endPowerConsumption = null;
+        }
+        if (increaseE1 != null) {
+            increaseE1.cancel();
+            increaseE1 = null;
+        }
+    }
+
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier
@@ -178,6 +193,9 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
 
         // Load config
         String paramString = Config.load("solar.txt");
+        if (paramString.isEmpty()) {
+            throw new Exception("Config file " + "Solar" + " is Empty");
+        }
         String[] params = paramString.split("\\,");
         String startTimeStr = params[0];
         String endTimeStr = params[1];
