@@ -20,10 +20,13 @@ import com.sonycsl.echo.eoj.device.housingfacilities.ElectricVehicle;
 import com.sonycsl.echo.eoj.device.housingfacilities.GeneralLighting;
 import com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration;
 import com.sonycsl.echo.eoj.device.managementoperation.Controller;
+import com.sonycsl.echo.eoj.profile.NodeProfile;
 import com.sonycsl.echo.node.EchoNode;
 import com.sonycsl.echo.processing.defaults.DefaultNodeProfile;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -40,12 +43,10 @@ public class EchoController {
     public static final MySolar SOLAR = new MySolar();
     public static final MyLight LIGHT = new MyLight();
 
-    private static ArrayList<DeviceObject> listDevice = new ArrayList<>();
-
     private static void saveConfig() {
         try {
             StringBuilder listConfig = new StringBuilder("");
-            for (DeviceObject deviceObject : listDevice) {
+            for (DeviceObject deviceObject : listDevice()) {
                 if (deviceObject instanceof MyBattery) {
                     listConfig.append(MyBattery.name).append(",");
                 }
@@ -100,33 +101,47 @@ public class EchoController {
 //            System.out.println("Load config failed: " + e.getMessage());
 //        }
 //    }
+    static TimerTask notifyTask = null;
+
     public static void start(DeviceObject device) throws IOException {
-        if (listDevice.contains(device)) {
+        // notify to others
+        if (notifyTask == null) {
+            notifyTask = new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        if (Echo.isStarted()) {
+                            NodeProfile.informG().reqInformInstanceListNotification().send();
+                        }
+                    } catch (IOException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                }
+            };
+            new Timer().scheduleAtFixedRate(notifyTask, 0, 5000);
+        }
+        if (listDevice().contains(device)) {
             return;
         }
         try {
             // Start Node
             if (Echo.isStarted()) {
-                listDevice.add(device);
-                Echo.clear();
+                Echo.getSelfNode().addDevice(device);
             } else {
-                listDevice = new ArrayList<>();
-                listDevice.add(device);
+                addEvent();  // -> Log to debug.
+                Echo.start(NODE_PROFILE, new DeviceObject[]{device});
             }
-            addEvent();  // -> Log to debug.
-            Echo.start(NODE_PROFILE, listDevice());
-            NODE_PROFILE.get().reqGetSelfNodeInstanceListS().send();
+            NodeProfile.informG().reqInformInstanceListNotification().send();
             saveConfig();
         } catch (IOException e) {
-            listDevice.remove(device);
-            throw e;
+            throw new IOException("Start: " + e.getMessage());
         }
     }
 
     public static void stop(DeviceObject device) throws IOException {
-        // Start Node
-        if (Echo.isStarted()) {
-            try {
+        // Stop Node
+        try {
+            if (Echo.isStarted()) {
                 if (device instanceof MyBattery) {
                     ((MyBattery) device).stop();
                 }
@@ -136,33 +151,28 @@ public class EchoController {
                 if (device instanceof MySolar) {
                     ((MySolar) device).stop();
                 }
-                listDevice.remove(device);
-                Echo.clear();
-                if (!listDevice.isEmpty()) {
-                    addEvent();  // -> Log to debug.
-                    Echo.start(NODE_PROFILE, listDevice());
-                    NODE_PROFILE.get().reqGetSelfNodeInstanceListS().send();
-                }
+                Echo.getSelfNode().removeDevice(device);
+                NodeProfile.informG().reqInformInstanceListNotification().send();
                 saveConfig();
-            } catch (IOException e) {
-                listDevice.add(device);
-                throw e;
             }
+        } catch (IOException e) {
+            throw new IOException("Stop: " + e.getMessage());
         }
+
     }
 
     public static boolean contains(String device) {
         if (device.equalsIgnoreCase(MyBattery.name)) {
-            return listDevice.contains(BATTERY);
+            return listDevice().contains(BATTERY);
         }
         if (device.equalsIgnoreCase(MyElectricVehicle.name)) {
-            return listDevice.contains(EV);
+            return listDevice().contains(EV);
         }
         if (device.equalsIgnoreCase(MySolar.name)) {
-            return listDevice.contains(SOLAR);
+            return listDevice().contains(SOLAR);
         }
         if (device.equalsIgnoreCase(MyLight.name)) {
-            return listDevice.contains(LIGHT);
+            return listDevice().contains(LIGHT);
         }
         return false;
     }
@@ -201,9 +211,16 @@ public class EchoController {
     }
 
     // Device Object List to array
-    private static DeviceObject[] listDevice() {
-        DeviceObject[] deviceObjects = new DeviceObject[listDevice.size()];
-        return listDevice.toArray(deviceObjects);
+    private static ArrayList<DeviceObject> listDevice() {
+        ArrayList<DeviceObject> listDevice = new ArrayList<>();
+        for (EchoNode node : Echo.getNodes()) {
+            for (DeviceObject device : node.getDevices()) {
+                if (node.isSelfNode()) {
+                    listDevice.add(device);
+                }
+            }
+        }
+        return listDevice;
     }
 
     // Add Event
