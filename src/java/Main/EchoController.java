@@ -153,6 +153,9 @@ public class EchoController {
                 }
                 Echo.getSelfNode().removeDevice(device);
                 NodeProfile.informG().reqInformInstanceListNotification().send();
+                if (Echo.getSelfNode().getDevices().length == 0) {
+                    Echo.clear();
+                }
                 saveConfig();
             }
         } catch (IOException e) {
