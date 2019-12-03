@@ -152,6 +152,7 @@ public class EchoController {
                     ((MySolar) device).stop();
                 }
                 Echo.getSelfNode().removeDevice(device);
+                device.removeNode();
                 NodeProfile.informG().reqInformInstanceListNotification().send();
                 if (Echo.getSelfNode().getDevices().length == 0) {
                     Echo.clear();
@@ -216,11 +217,9 @@ public class EchoController {
     // Device Object List to array
     private static ArrayList<DeviceObject> listDevice() {
         ArrayList<DeviceObject> listDevice = new ArrayList<>();
-        for (EchoNode node : Echo.getNodes()) {
-            for (DeviceObject device : node.getDevices()) {
-                if (node.isSelfNode()) {
-                    listDevice.add(device);
-                }
+        if (Echo.getSelfNode() != null) {
+            for (DeviceObject device : Echo.getSelfNode().getDevices()) {
+                listDevice.add(device);
             }
         }
         return listDevice;
@@ -274,12 +273,6 @@ public class EchoController {
                     }
                 });
 
-//                try {
-//                    System.out.println("Property Map: ");
-//                    device.get().reqGetProperty(device.EPC_GET_PROPERTY_MAP).send();
-//                } catch (IOException ex) {
-//                    Logger.getLogger(EchoController.class.getName()).log(Level.SEVERE, null, ex);
-//                }
             }
         }); // No more events.
     }
