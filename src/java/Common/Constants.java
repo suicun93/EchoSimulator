@@ -13,6 +13,6 @@ public class Constants {
 
     public static final boolean DEBUGGING = false;
 //    public static final boolean DEBUGGING = true;
+    public static long PERIOD = 10000;
 
-    
 }

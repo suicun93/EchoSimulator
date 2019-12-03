@@ -6,6 +6,7 @@
 package Main;
 
 import Common.Config;
+import Common.Constants;
 import Common.Convert;
 import Model.MyBattery;
 import Model.MyElectricVehicle;
@@ -118,19 +119,18 @@ public class EchoController {
                     }
                 }
             };
-            new Timer().scheduleAtFixedRate(notifyTask, 0, 5000);
+            new Timer().scheduleAtFixedRate(notifyTask, 0, Constants.PERIOD);
         }
         if (listDevice().contains(device)) {
             return;
         }
         try {
             // Start Node
-            if (Echo.isStarted()) {
-                Echo.getSelfNode().addDevice(device);
-            } else {
+            if (!Echo.isStarted()) {
                 addEvent();  // -> Log to debug.
-                Echo.start(NODE_PROFILE, new DeviceObject[]{device});
+                Echo.start(NODE_PROFILE, new DeviceObject[]{});
             }
+            Echo.getSelfNode().addDevice(device);
             NodeProfile.informG().reqInformInstanceListNotification().send();
             saveConfig();
         } catch (IOException e) {
