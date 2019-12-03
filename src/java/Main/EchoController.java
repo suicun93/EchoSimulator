@@ -115,6 +115,7 @@ public class EchoController {
             }
             addEvent();  // -> Log to debug.
             Echo.start(NODE_PROFILE, listDevice());
+            NODE_PROFILE.get().reqGetSelfNodeInstanceListS().send();
             saveConfig();
         } catch (IOException e) {
             listDevice.remove(device);
@@ -140,6 +141,7 @@ public class EchoController {
                 if (!listDevice.isEmpty()) {
                     addEvent();  // -> Log to debug.
                     Echo.start(NODE_PROFILE, listDevice());
+                    NODE_PROFILE.get().reqGetSelfNodeInstanceListS().send();
                 }
                 saveConfig();
             } catch (IOException e) {
