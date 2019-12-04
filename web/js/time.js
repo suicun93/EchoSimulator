@@ -42,8 +42,9 @@ function setTime() {
                 modal.append(responseMsg(FAIL_STATUS,"<p>Set time failed:</p>  " + revdata));
                 closeMsg();
             } else {
+                console.log("ok");
                 cleanMsg();
-                modal.append(responseMsg(SUCCESS_STATUS,"<p>Set time Successful:</p" + revdata));
+                modal.append(responseMsg(SUCCESS_STATUS,"<p>Set time Successful:</p"));
                 closeMsg();
             }
         } else {
