@@ -26,6 +26,7 @@ import com.sonycsl.echo.node.EchoNode;
 import com.sonycsl.echo.processing.defaults.DefaultNodeProfile;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -218,9 +219,7 @@ public class EchoController {
     private static ArrayList<DeviceObject> listDevice() {
         ArrayList<DeviceObject> listDevice = new ArrayList<>();
         if (Echo.getSelfNode() != null) {
-            for (DeviceObject device : Echo.getSelfNode().getDevices()) {
-                listDevice.add(device);
-            }
+            listDevice.addAll(Arrays.asList(Echo.getSelfNode().getDevices()));
         }
         return listDevice;
     }
@@ -234,19 +233,15 @@ public class EchoController {
             public void onNewNode(EchoNode node) {
                 super.onNewNode(node);
                 // Found new Node.
-                System.out.println("New Node found.");
-                System.out.println("Node id = " + node.getAddress().getHostAddress());
                 System.out.println("Node = " + node.getNodeProfile());
-                System.out.println("--------\n");
+                System.out.println("--------");
             }
 
             // Found new DeviceObject.
             @Override
             public void onNewDeviceObject(DeviceObject device) {
                 super.onNewDeviceObject(device);
-                System.out.println("\t   New " + deviceDetect(device) + " found.");
                 System.out.println("\t   Device = " + device);
-                System.out.println("\t   ----\n\n");
                 // Set Receiver for getter setter.
                 device.setReceiver(new ElectricVehicle.Receiver() {
                     // Getter Receiver 
