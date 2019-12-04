@@ -4,7 +4,7 @@ let modal = $('#modal');
 function loadTime() {
     //FF, Opera, Safari, Chrome
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open('POST', "http://192.168.52.2:8080/Collector/Time", true);
+    xmlHttp.open('POST', "Time", true);
     xmlHttp.setRequestHeader("Content-Type", "text/plain");
     xmlHttp.onload = () => {
         if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
@@ -28,7 +28,7 @@ function loadTime() {
 function setTime() {
     time = timeInput.value;
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("POST", "http://192.168.52.2:8080/Collector/Time", true);
+    xmlHttp.open("POST", "Time", true);
     xmlHttp.onerror = (e) => {
         cleanMsg();
         modal.append(responseMsg(FAIL_STATUS,"<p>GET TIME:</p>"+"Can not connect to server"));
