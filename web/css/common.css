@@ -4,7 +4,9 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  min-height: 100vh; }
+  min-height: 100vh;
+  font-family: 'Yu Gothic UI', sans-serif;
+  color: #737373; }
 
 #bg-img {
   object-fit: cover; }
@@ -22,12 +24,20 @@ body {
   margin: 0 3rem; }
 
 .header {
-  margin-bottom: 5vh; }
+  margin-bottom: 3vh; }
   .header .container div {
     height: 100%;
     width: 3%;
     background: #f1ff7c85;
     margin-left: 3rem;
     position: absolute; }
+
+.container a {
+  margin-bottom: 1rem;
+  width: 5rem; }
+
+.notification {
+  margin-left: 25%;
+  max-width: 50%; }
 
 /*# sourceMappingURL=common.css.map */

@@ -6,6 +6,8 @@ body{
     background-repeat: no-repeat;
     background-size: cover;
     min-height: 100vh;
+    font-family: 'Yu Gothic UI', sans-serif;
+    color: #737373;
 }
 #bg-img{
     object-fit: cover;
@@ -24,7 +26,7 @@ body{
 }
 
 .header{
-    margin-bottom: 5vh;
+    margin-bottom: 3vh;
     .container{
         div{
             height: 100%;
@@ -34,4 +36,14 @@ body{
             position: absolute;
         }
     }
+}
+.container{
+    a{
+        margin-bottom: 1rem;
+        width: 5rem;
+    }
+}
+.notification{
+    margin-left: 25%;
+    max-width: 50%;
 }

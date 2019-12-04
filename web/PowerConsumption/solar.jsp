@@ -9,6 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!--<script src="https://kit.fontawesome.com/594a36984d.js" crossorigin="anonymous"></script>-->
         <link rel="stylesheet" href="../css/bulma.min.css">
         <link rel="stylesheet" href="../css/common.css">
         <link rel="stylesheet" href="../css/battery.css">
@@ -69,7 +70,7 @@
                                         <button class="button is-primary is-outlined" type="submit" onclick="schedule('solar')">Schedule</button>
                                     </div>
                                     <div class="control">
-                                        <button class="button is-danger is-outlined" t onclick="window.location.href = '/EchoSimulator'">Cancel</button>
+                                        <button class="button is-danger is-outlined" t onclick="window.location.href = '/Simulator'">Cancel</button>
                                     </div>
                                 </div>
                                 <div class="notification is-primary" id="success-msg" style="display: none">
@@ -87,7 +88,7 @@
             </section>
         </div>
     </body>
+    <script src="../js/close-message.js"></script>
     <script src="../js/schedule.js">
     </script>
-    <script src="../js/close-message.js"></script>
 </html>

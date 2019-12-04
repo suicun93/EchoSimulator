@@ -20,7 +20,7 @@ function schedule(device) {
     var endTime = endTimeInput.value;
     var mode = modeInput.options[modeInput.selectedIndex].value;
     var instantaneous = instantaneousInput.value;
-    
+
     if (startTime === "") {
         startTimeInput.classList.add("is-danger");
         startTimeMess.style.display = "block";
@@ -33,7 +33,7 @@ function schedule(device) {
         endTimeInput.classList.add("is-danger");
         endTimeMess.style.display = "block";
         return;
-    }else{
+    } else {
         endTimeInput.className = ("input");
         endTimeMess.style.display = "none";
     }
@@ -42,7 +42,7 @@ function schedule(device) {
         instantaneousInput.classList.add("is-danger");
         instantaneousMess.style.display = "block";
         return;
-    }else{
+    } else {
         instantaneousInput.className = ("input");
         instantaneousMess.style.display = "none";
     }
@@ -55,12 +55,16 @@ function schedule(device) {
             var data = xmlHttp.responseText;
             if (data === "success") {
                 successMsg.style.display = "block";
+                failedMsg.style.display = "none";
             } else {
-                failedMsg.innerHTML = "Schedule set failed: \n "+data;
+                failedMsg.innerHTML = "<button class='delete'></button> Set time failed: \n " + data;
+                closeMsg();
                 failedMsg.style.display = "block";
             }
         } else {
-            window.alert("Connection failed: " + xmlHttp.status);
+            failedMsg.innerHTML = "<button class='delete'></button> Connection failed: " + xmlHttp.status;
+            closeMsg();
+            failedMsg.style.display = "block";
         }
     };
     xmlHttp.send(device + "," + startTime + "," + endTime + "," + mode + "," + instantaneous);

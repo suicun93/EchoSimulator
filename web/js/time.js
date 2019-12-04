@@ -1,17 +1,11 @@
-const INTERVAL_TIME = 15000;
-const TIME_OUT = 1000;
-const STATE_READY = 4;
-const STATUS_OK = 200;
 var timeInput = document.getElementById("time");
-var successMsg = document.getElementById("success-msg");
-var failedMsg = document.getElementById("failed-msg");
 window.onload = loadTime();
-
+let modal = $('#modal');
 function loadTime() {
     //FF, Opera, Safari, Chrome
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open('POST', "Time", true);
-    xmlHttp.setRequestHeader("Content-Type", "text/html");
+    xmlHttp.open('POST', "http://192.168.52.2:8080/Collector/Time", true);
+    xmlHttp.setRequestHeader("Content-Type", "text/plain");
     xmlHttp.onload = () => {
         if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
             var date = xmlHttp.responseText;
@@ -23,30 +17,39 @@ function loadTime() {
             timeInput.value =
                     p[2] + '-' + month + '-' + day + " " + p[3].substr(0, 5);
         } else {
-            window.alert("Connection failed: " + xmlHttp.status);
+            cleanMsg();
+            modal.append(responseMsg(FAIL_STATUS,"<p>Connection failed:</p>" + xmlHttp.status));
+            closeMsg();
         }
     };
     xmlHttp.send('');
-}
-;
+};
+
 function setTime() {
     time = timeInput.value;
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open("POST", "Time", true);
+    xmlHttp.open("POST", "http://192.168.52.2:8080/Collector/Time", true);
     xmlHttp.onerror = (e) => {
-        window.alert("Can not connect to server");
+        cleanMsg();
+        modal.append(responseMsg(FAIL_STATUS,"<p>GET TIME:</p>"+"Can not connect to server"));
+        closeMsg();
     };
     xmlHttp.onload = (e) => {
         if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
             var revdata = xmlHttp.responseText;
             if (revdata !== "success") {
-                failedMsg.innerHTML = "Set time failed: \n "+revdata;
-                failedMsg.style.display = "block";
+                cleanMsg();
+                modal.append(responseMsg(FAIL_STATUS,"<p>Set time failed:</p>  " + revdata));
+                closeMsg();
             } else {
-                successMsg.style.display = "block";
+                cleanMsg();
+                modal.append(responseMsg(SUCCESS_STATUS,"<p>Set time Successful:</p" + revdata));
+                closeMsg();
             }
         } else {
-            window.alert("Connection failed: " + xmlHttp.status);
+            cleanMsg();
+            modal.append(responseMsg(FAIL_STATUS,"<p>Connection failed:</p>" + xmlHttp.status));
+            closeMsg();
         }
     };
     xmlHttp.send(time);

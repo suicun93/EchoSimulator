@@ -37,7 +37,6 @@
                                 </div>
                                 <div class="notification is-danger" id="failed-msg" style="display: none">
                                     <button class="delete"></button>
-                                    Schedule Failed!
                                 </div>
                             </div>
 
@@ -145,10 +144,10 @@
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript">
-                                            $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+        $(".form_datetime").datetimepicker({format: 'yyyy-mm-dd hh:ii'});
     </script>
+    <script src="js/common.js"></script>
     <script src="js/time.js"></script>
-    <script src="js/close-message.js"></script>
 
     <script>
         var EVStart = document.getElementById('startEVBtn');

@@ -9,7 +9,8 @@
 
 .set-time-wrapper {
   width: 40%;
-  margin-left: 30%; }
+  margin-left: 30%;
+  margin-bottom: 1rem; }
   .set-time-wrapper input {
     text-align: center; }
   .set-time-wrapper button {
