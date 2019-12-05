@@ -40,14 +40,27 @@
         <url-pattern>/Schedule</url-pattern>
     </servlet-mapping>
     
+    <!--Stop Echo--> 
+    <servlet>
+        <servlet-name>StopEcho</servlet-name>
+        <servlet-class>Servlet.StopEcho</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StopEcho</servlet-name>
+        <url-pattern>/StopEcho</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Infinite Session timeout-->
     <session-config>
         <session-timeout>
-            5
+            -1
         </session-timeout>
     </session-config>
     
     <!--Name in tomcat-->
     <display-name>
-        Máy ảo, EV, Battery, Solar, Light, các kiểu con đà điểu.
+        シミュレーター操作, EV, Battery, Solar, Light.
     </display-name>
+    
+    <!--End-->
 </web-app>
