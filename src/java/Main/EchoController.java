@@ -6,7 +6,6 @@
 package Main;
 
 import Common.Config;
-import Common.Constants;
 import Common.Convert;
 import Model.MyBattery;
 import Model.MyElectricVehicle;
@@ -16,18 +15,14 @@ import com.sonycsl.echo.Echo;
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.EchoObject;
 import com.sonycsl.echo.eoj.device.DeviceObject;
-import com.sonycsl.echo.eoj.device.housingfacilities.Battery;
 import com.sonycsl.echo.eoj.device.housingfacilities.ElectricVehicle;
-import com.sonycsl.echo.eoj.device.housingfacilities.GeneralLighting;
-import com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration;
-import com.sonycsl.echo.eoj.device.managementoperation.Controller;
 import com.sonycsl.echo.eoj.profile.NodeProfile;
 import com.sonycsl.echo.node.EchoNode;
 import com.sonycsl.echo.processing.defaults.DefaultNodeProfile;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  *
@@ -102,25 +97,9 @@ public class EchoController {
 //            System.out.println("Load config failed: " + e.getMessage());
 //        }
 //    }
-    static TimerTask notifyTask = null;
 
     public static void start(DeviceObject device) throws IOException {
         // notify to others
-        if (notifyTask == null) {
-            notifyTask = new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        if (Echo.isStarted()) {
-                            NodeProfile.informG().reqInformInstanceListNotification().send();
-                        }
-                    } catch (IOException ex) {
-                        System.out.println(ex.getMessage());
-                    }
-                }
-            };
-            new Timer().scheduleAtFixedRate(notifyTask, 0, Constants.PERIOD);
-        }
         if (listDevice().contains(device)) {
             return;
         }
@@ -154,15 +133,11 @@ public class EchoController {
                 Echo.getSelfNode().removeDevice(device);
                 device.removeNode();
                 NodeProfile.informG().reqInformInstanceListNotification().send();
-                if (Echo.getSelfNode().getDevices().length == 0) {
-                    Echo.clear();
-                }
                 saveConfig();
             }
         } catch (IOException e) {
             throw new IOException("Stop: " + e.getMessage());
         }
-
     }
 
     public static boolean contains(String device) {
@@ -181,46 +156,11 @@ public class EchoController {
         return false;
     }
 
-    // Device Detection
-    private static String deviceDetect(DeviceObject device) {
-        // Device detection
-        if (device instanceof Controller) {
-            return "Controller";
-        }
-        if (device instanceof MyBattery) {
-            return "My Battery";
-        }
-        if (device instanceof MyElectricVehicle) {
-            return "My Electric Vehicle";
-        }
-        if (device instanceof MySolar) {
-            return "My Solar";
-        }
-        if (device instanceof MyLight) {
-            return "My Light";
-        }
-        if (device instanceof ElectricVehicle) {
-            return "Electric Vehicle";
-        }
-        if (device instanceof Battery) {
-            return "Battery";
-        }
-        if (device instanceof HouseholdSolarPowerGeneration) {
-            return "Solar";
-        }
-        if (device instanceof GeneralLighting) {
-            return "Light";
-        }
-        return "Unknown";
-    }
-
     // Device Object List to array
     private static ArrayList<DeviceObject> listDevice() {
         ArrayList<DeviceObject> listDevice = new ArrayList<>();
         if (Echo.getSelfNode() != null) {
-            for (DeviceObject device : Echo.getSelfNode().getDevices()) {
-                listDevice.add(device);
-            }
+            listDevice.addAll(Arrays.asList(Echo.getSelfNode().getDevices()));
         }
         return listDevice;
     }
@@ -234,19 +174,15 @@ public class EchoController {
             public void onNewNode(EchoNode node) {
                 super.onNewNode(node);
                 // Found new Node.
-                System.out.println("New Node found.");
-                System.out.println("Node id = " + node.getAddress().getHostAddress());
                 System.out.println("Node = " + node.getNodeProfile());
-                System.out.println("--------\n");
+                System.out.println("--------");
             }
 
             // Found new DeviceObject.
             @Override
             public void onNewDeviceObject(DeviceObject device) {
                 super.onNewDeviceObject(device);
-                System.out.println("\t   New " + deviceDetect(device) + " found.");
                 System.out.println("\t   Device = " + device);
-                System.out.println("\t   ----\n\n");
                 // Set Receiver for getter setter.
                 device.setReceiver(new ElectricVehicle.Receiver() {
                     // Getter Receiver 
@@ -276,5 +212,4 @@ public class EchoController {
             }
         }); // No more events.
     }
-
 }
