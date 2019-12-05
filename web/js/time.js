@@ -1,6 +1,6 @@
 var timeInput = document.getElementById("time");
 window.onload = loadTime();
-let modal = $('#modal');
+let modal = $('.msg-wrapper');
 function loadTime() {
     //FF, Opera, Safari, Chrome
     var xmlHttp = new XMLHttpRequest();
@@ -18,7 +18,7 @@ function loadTime() {
                     p[2] + '-' + month + '-' + day + " " + p[3].substr(0, 5);
         } else {
             cleanMsg();
-            modal.append(responseMsg(FAIL_STATUS,"<p>Connection failed:</p>" + xmlHttp.status));
+            modal.append(responseMsg(FAIL_STATUS,"<p>Connection failed: loadTime()</p>" + xmlHttp.status));
             closeMsg();
         }
     };
