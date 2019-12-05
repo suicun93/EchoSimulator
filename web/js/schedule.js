@@ -1,7 +1,3 @@
-const INTERVAL_TIME = 15000;
-const TIME_OUT = 1000;
-const STATE_READY = 4;
-const STATUS_OK = 200;
 var startTimeInput = document.getElementById("startTime");
 var startTimeMess = document.getElementById("start-time-invalid-mess");
 var endTimeInput = document.getElementById("endTime");
@@ -11,7 +7,7 @@ var instantaneousInput = document.getElementById("instantaneous");
 var instantaneousMess = document.getElementById("instantaneous-value-mess");
 var successMsg = document.getElementById("success-msg");
 var failedMsg = document.getElementById("failed-msg");
-
+let modal = $('.msg-wrapper');
 /**
  * @param {String} device 
  */
@@ -54,17 +50,15 @@ function schedule(device) {
         if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
             var data = xmlHttp.responseText;
             if (data === "success") {
-                successMsg.style.display = "block";
-                failedMsg.style.display = "none";
-            } else {
-                failedMsg.innerHTML = "<button class='delete'></button> Set time failed: \n " + data;
+                modal.append(responseMsg(SUCCESS_STATUS, "<p> Set time Success</p>  " ));
                 closeMsg();
-                failedMsg.style.display = "block";
+            } else {
+                modal.append(responseMsg(FAIL_STATUS, "<p> Set time failed:</p>  " + data));
+                closeMsg();
             }
         } else {
-            failedMsg.innerHTML = "<button class='delete'></button> Connection failed: " + xmlHttp.status;
+            modal.append(responseMsg(FAIL_STATUS, "<p> Connection failed:</p>  " + xmlHttp.status));
             closeMsg();
-            failedMsg.style.display = "block";
         }
     };
     xmlHttp.send(device + "," + startTime + "," + endTime + "," + mode + "," + instantaneous);

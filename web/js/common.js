@@ -1,9 +1,8 @@
 var hasMsg = false;
 function responseMsg(type, content) {
-    if (!hasMsg) {
-        hasMsg = true;
-        return "<div class=\"notification is-" + (type == "success" ? "primary" : "danger") + "\" id=\"response-msg\" ><button class=\"delete\"></button>" + content + "</div>";
-    }
+    cleanMsg();
+    hasMsg = true;
+    return "<div class=\"notification is-" + (type == SUCCESS_STATUS ? "primary" : "danger") + "\" id=\"response-msg\" ><button class=\"delete\"></button>" + content + "</div>";
 }
 function cleanMsg(e) {
     $("#response-msg").remove();
@@ -19,3 +18,5 @@ const STATE_READY = 4;
 const STATUS_OK = 200;
 const SUCCESS_STATUS = "success";
 const FAIL_STATUS = "failed";
+const ON_STATUS = "ON";
+const OFF_STATUS = "OFF";

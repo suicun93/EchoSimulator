@@ -26,7 +26,7 @@
             <section class="content">
                 <div class="container">
                     <div class="columns">
-                        <div class="main-menu column is-8 is-offset-2">
+                        <div class="main-menu column is-8 is-offset-2 msg-wrapper">
                             <div class="menu-form column is-6 is-offset-3">
                                 <div class="field">
                                     <label class="label">Start Time</label>
@@ -82,7 +82,9 @@
             </section>
         </div>
     </body>
-    <script src="../js/close-message.js"></script>
+    <script src="../js/jquery.js"></script>
+
+    <script src="../js/common.js"></script>
     <script src="../js/schedule.js">
     </script>
 </html>

@@ -17,7 +17,6 @@ function loadTime() {
             timeInput.value =
                     p[2] + '-' + month + '-' + day + " " + p[3].substr(0, 5);
         } else {
-            cleanMsg();
             modal.append(responseMsg(FAIL_STATUS,"<p>Connection failed: loadTime()</p>" + xmlHttp.status));
             closeMsg();
         }
@@ -30,7 +29,6 @@ function setTime() {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("POST", "Time", true);
     xmlHttp.onerror = (e) => {
-        cleanMsg();
         modal.append(responseMsg(FAIL_STATUS,"<p>GET TIME:</p>"+"Can not connect to server"));
         closeMsg();
     };
@@ -38,17 +36,13 @@ function setTime() {
         if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
             var revdata = xmlHttp.responseText;
             if (revdata !== "success") {
-                cleanMsg();
                 modal.append(responseMsg(FAIL_STATUS,"<p>Set time failed:</p>  " + revdata));
                 closeMsg();
             } else {
-                console.log("ok");
-                cleanMsg();
                 modal.append(responseMsg(SUCCESS_STATUS,"<p>Set time Successful:</p"));
                 closeMsg();
             }
         } else {
-            cleanMsg();
             modal.append(responseMsg(FAIL_STATUS,"<p>Connection failed:</p>" + xmlHttp.status));
             closeMsg();
         }
