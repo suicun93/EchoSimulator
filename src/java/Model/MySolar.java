@@ -242,7 +242,8 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                 // 0x80 = 0x30
                 setOperationStatus(new byte[]{Operation.ON.value});
                 // 0xE0 = e0
-                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray(e0)));
+                byte[] e0Byte = Convert.intToByteArray(e0);
+                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED, new byte[]{e0Byte[2], e0Byte[3]}));
 
                 // Get E1
                 currentE1 = Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated());
