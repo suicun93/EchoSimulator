@@ -45,7 +45,7 @@ public class Config {
     public static void save(String fileName, String startTime, String endTime, String mode, String d3) throws Exception {
         try {
             // Validate mode
-            if (!mode.equalsIgnoreCase("0x41") && !mode.equalsIgnoreCase("0x44") && !mode.equalsIgnoreCase("0x42")) {
+            if (!mode.equalsIgnoreCase("0x41") && !mode.equalsIgnoreCase("0x43") && !mode.equalsIgnoreCase("0x42")) {
                 throw new Exception("Wrong mode");
             }
 
