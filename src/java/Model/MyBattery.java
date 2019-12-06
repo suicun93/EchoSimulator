@@ -6,6 +6,7 @@ import Main.EchoController;
 import Model.MyDeviceObject.Operation;
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.device.housingfacilities.Battery;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -92,6 +93,9 @@ public class MyBattery extends Battery {
         addSetProperty(EPC_REMAINING_STORED_ELECTRICITY1);
 //        addSetProperty(EPC_REMAINING_STORED_ELECTRICITY3);
 //        addSetProperty(EPC_RATED_ELECTRIC_ENERGY);
+
+        // Inform
+        addStatusChangeAnnouncementProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
     }
 
     /**
@@ -236,6 +240,11 @@ public class MyBattery extends Battery {
             // EPC = 0xD3 đạo hàm của E2
             case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY:
                 System.arraycopy(property.edt, 0, mInstantaneousChargeDischargeElectricEnergy, 0, 4);
+                try {
+                    inform().reqInformMeasuredInstantaneousChargeDischargeElectricEnergy().send();
+                } catch (IOException ex) {
+                    System.out.println("Battery EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY inform: " + ex.getMessage());
+                }
                 return true;
 
             // EPC = 0xE2 lượng điện hiện thời

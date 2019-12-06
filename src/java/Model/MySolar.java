@@ -79,6 +79,9 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
         // Setter
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED);
         addSetProperty(EPC_MEASURED_CUMULATIVE_AMOUNT_OF_ELECTRICITY_GENERATED);
+
+        // Informer
+        addStatusChangeAnnouncementProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED);
     }
 
     /**
@@ -115,7 +118,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
             mInsallationLocation[0] = edt[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Solar inform:" + ex.getMessage());
         }
         return true;
     }
@@ -172,6 +175,11 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
             // EPC = 0xE0
             case EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED:
                 System.arraycopy(property.edt, 0, mInstantaneousAmountOfElectricityGenerated, 0, 2);
+                try {
+                    inform().reqInformMeasuredInstantaneousAmountOfElectricityGenerated().send();
+                } catch (IOException ex) {
+                    System.out.println("Solar EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED inform: " + ex.getMessage());
+                }
                 return true;
             // EPC = 0xE1
             case EPC_MEASURED_CUMULATIVE_AMOUNT_OF_ELECTRICITY_GENERATED:

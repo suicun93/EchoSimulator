@@ -91,7 +91,10 @@ public class MyElectricVehicle extends ElectricVehicle {
         // Setter
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addSetProperty(EPC_REMAINING_BATTERY_CAPACITY1);
-//        addSetProperty(EPC_REMAINING_BATTERY_CAPACITY3);
+        //        addSetProperty(EPC_REMAINING_BATTERY_CAPACITY3);
+
+        // Inform
+        addStatusChangeAnnouncementProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
     }
 
     /**
@@ -220,7 +223,7 @@ public class MyElectricVehicle extends ElectricVehicle {
             mOperationModeSetting[0] = edt[0];
             inform().reqInformOperationModeSetting().send();
         } catch (IOException ex) {
-            System.out.println("EV setOperationModeSetting: " + ex.getMessage());
+            System.out.println("EV setOperationModeSetting inform: " + ex.getMessage());
         }
         return true;
     }
@@ -275,6 +278,11 @@ public class MyElectricVehicle extends ElectricVehicle {
             // EPC = 0xD3
             case EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY:
                 System.arraycopy(property.edt, 0, mInstantaneousChargeDischargeElectricEnergy, 0, 4);
+                try {
+                    inform().reqInformMeasuredInstantaneousChargeDischargeElectricEnergy().send();
+                } catch (IOException ex) {
+                    System.out.println("EV EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY inform: " + ex.getMessage());
+                }
                 return true;
 
             // EPC = 0xE2
