@@ -6,6 +6,9 @@
 package Model;
 
 import java.io.IOException;
+import Model.MyDeviceObject.Operation;
+import static Model.MyDeviceObject.Operation.ON;
+import static Model.MyDeviceObject.Operation.OFF;
 
 /**
  *
@@ -120,5 +123,10 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
     @Override
     protected byte[] getLightingModeSetting() {
         return mLightingModeSetting;
+    }
+
+    public void switchStatus() {
+        MyDeviceObject.Operation temp = Operation.from(getOperationStatus()[0]) == ON ? OFF : ON;
+        setOperationStatus(new byte[]{temp.value});
     }
 }

@@ -9,7 +9,6 @@
         <servlet-name>Start</servlet-name>
         <url-pattern>/Start</url-pattern>
     </servlet-mapping>
-    
     <!--Stop device-->
     <servlet>
         <servlet-name>Stop</servlet-name>
@@ -19,7 +18,6 @@
         <servlet-name>Stop</servlet-name>
         <url-pattern>/Stop</url-pattern>
     </servlet-mapping>
-    
     <!--Get Time and Set Time-->
     <servlet>
         <servlet-name>Time</servlet-name>
@@ -29,7 +27,6 @@
         <servlet-name>Time</servlet-name>
         <url-pattern>/Time</url-pattern>
     </servlet-mapping>
-    
     <!--Schedule Energy Consumption-->
     <servlet>
         <servlet-name>Schedule</servlet-name>
@@ -39,8 +36,7 @@
         <servlet-name>Schedule</servlet-name>
         <url-pattern>/Schedule</url-pattern>
     </servlet-mapping>
-    
-    <!--Stop Echo--> 
+    <!--Stop Echo-->
     <servlet>
         <servlet-name>StopEcho</servlet-name>
         <servlet-class>Servlet.StopEcho</servlet-class>
@@ -49,18 +45,25 @@
         <servlet-name>StopEcho</servlet-name>
         <url-pattern>/StopEcho</url-pattern>
     </servlet-mapping>
-    
+    <!--Light Switcher-->
+    <servlet>
+        <servlet-name>SwitchLight</servlet-name>
+        <servlet-class>Servlet.SwitchLight</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SwitchLight</servlet-name>
+        <url-pattern>/SwitchLight</url-pattern>
+    </servlet-mapping>
+
     <!-- Infinite Session timeout-->
     <session-config>
         <session-timeout>
             -1
         </session-timeout>
     </session-config>
-    
     <!--Name in tomcat-->
     <display-name>
         シミュレーター操作, EV, Battery, Solar, Light.
     </display-name>
-    
     <!--End-->
 </web-app>
