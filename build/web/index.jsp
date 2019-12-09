@@ -122,6 +122,12 @@
                                                     }
                                                 %>
                                                 >Stop Light</button>
+                                        <button class="config-btn button is-info is-rounded"  id=""
+                                                <% if (!EchoController.contains("light")) {
+                                                %>disabled<%
+                                                    }
+                                                %>
+                                                >ON/OFF</button>
                                     </div>
                                 </div>
                             </div>

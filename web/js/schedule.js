@@ -50,10 +50,10 @@ function schedule(device) {
         if (xmlHttp.readyState === STATE_READY && xmlHttp.status === STATUS_OK) {
             var data = xmlHttp.responseText;
             if (data === "success") {
-                modal.append(responseMsg(SUCCESS_STATUS, "<p> Set time Success</p>  " ));
+                modal.append(responseMsg(SUCCESS_STATUS, "<p> Set schedule Success</p>  " ));
                 closeMsg();
             } else {
-                modal.append(responseMsg(FAIL_STATUS, "<p> Set time failed:</p>  " + data));
+                modal.append(responseMsg(FAIL_STATUS, "<p> Set schedule failed:</p>  " + data));
                 closeMsg();
             }
         } else {

@@ -20,7 +20,7 @@
             <section class="header">
                 <div class="container">
                     <div></div>
-                    <h1 class="head-title">EV Consumption Configuration</h1>
+                    <h1 class="head-title">Solar Consumption Configuration</h1>
                 </div>
             </section>
             <section class="content">
