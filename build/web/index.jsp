@@ -122,7 +122,7 @@
                                                     }
                                                 %>
                                                 >Stop Light</button>
-                                        <button class="config-btn button is-info is-rounded"  id="" onclick="switchLight()"
+                                        <button class="config-btn button is-info is-rounded"  id="light-switch" onclick="switchLight()"
                                                 <% if (!EchoController.contains("light")) {
                                                 %>disabled<%
                                                     }
@@ -160,7 +160,7 @@
                                             var SolarConfigBtn = document.getElementById("solar-config-btn");
                                             var LightStart = document.getElementById('startLightBtn');
                                             var LightStop = document.getElementById('stopLightBtn');
-
+                                            var LightSwitch = $("#light-switch");
                                             /**
                                              * Update UI
                                              * @@param {String} device
@@ -213,9 +213,11 @@
                                                     if (enable) {
                                                         LightStart.disabled = true;
                                                         LightStop.disabled = false;
+                                                        LightSwitch.disabled = false;
                                                     } else {
                                                         LightStart.disabled = false;
                                                         LightStop.disabled = true;
+                                                        LightSwitch.disabled = true;
                                                     }
                                                 }
                                             }
