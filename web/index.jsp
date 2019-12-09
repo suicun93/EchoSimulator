@@ -122,11 +122,11 @@
                                                     }
                                                 %>
                                                 >Stop Light</button>
-                                        <button class="config-btn button is-info is-rounded"  id=""
+                                        <button class="config-btn button is-info is-rounded"  id="" onclick="switchLight()"
                                                 <% if (!EchoController.contains("light")) {
                                                 %>disabled<%
                                                     }
-                                                %>
+                                                %> 
                                                 >ON/OFF</button>
                                     </div>
                                 </div>
@@ -272,6 +272,19 @@
                                                     }
                                                 };
                                                 xmlHttp.send(device);
+                                            }
+                                            function switchLight() {
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "SwitchLight",
+                                                    data: "",
+                                                    success: function (response) {
+                                                        console.log(response.text);
+                                                    },
+                                                    error: function (response) {
+                                                        console.log(response.text);
+                                                    }
+                                                });
                                             }
     </script>
 </html>
