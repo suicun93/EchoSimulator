@@ -229,7 +229,9 @@ public class MyElectricVehicle extends ElectricVehicle {
         try {
             // Announcement at status changed
             mOperationModeSetting[0] = edt[0];
-            // Rununing like a actual device.
+            // Running like a actual device.
+            // Get D0, E2
+            currentE2 = Convert.byteArrayToInt(getRemainingBatteryCapacity1());
             int d0 = Convert.byteArrayToInt(getUsedCapacity1());
             int d3 = Convert.byteArrayToInt(getMeasuredInstantaneousChargeDischargeElectricEnergy());
             // Loop every second
@@ -433,9 +435,6 @@ public class MyElectricVehicle extends ElectricVehicle {
 
                 // 0xD3 = d3
                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(d3)));
-
-                // Get D0, E2
-                currentE2 = Convert.byteArrayToInt(getRemainingBatteryCapacity1());
 
                 // 0xDA = mode
                 setOperationModeSetting(mode);

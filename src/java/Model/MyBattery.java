@@ -185,9 +185,11 @@ public class MyBattery extends Battery {
         try {
             // Announcement at status change
             mOperationModeSetting[0] = edt[0];
-            // Rununing like a actual device.
+            // Running like a actual device.
+            // Get D0, E2
             int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
             int d3 = Convert.byteArrayToInt(getMeasuredInstantaneousChargeDischargeElectricEnergy());
+            currentE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
             // Loop every second
             int delay = 0;
             int period = 1000;
@@ -402,9 +404,6 @@ public class MyBattery extends Battery {
 
                 // 0xD3 = d3
                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(d3)));
-
-                // Get D0, E2
-                currentE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
 
                 // 0xDA = mode
                 setOperationModeSetting(mode);
