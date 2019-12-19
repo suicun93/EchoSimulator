@@ -15,6 +15,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import Model.MyDeviceObject.Operation;
+import static Model.MyDeviceObject.Operation.OFF;
 
 /**
  *
@@ -32,9 +33,12 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     private final byte[] mManufacturerCode = {0, 0, 0};                                 // EPC = 0x8A
 
     // Private properties
-    private final byte[] mInstantaneousAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x15};                           // 0xE0 W
+    private final byte[] mInstantaneousAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x00};                           // 0xE0 W
     private final byte[] mCumulativeAmountOfElectricityGenerated = {(byte) 0x00, (byte) 0x00, (byte) 0x0B, (byte) 0xB8};    // 0xE1 kWh 2500
     private Timer startPowerConsumption, endPowerConsumption;
+    // My challenge
+    private Timer increaseE1;
+    private float currentE1;
 
     @Override
     public void onNew() {
@@ -104,6 +108,13 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
         try {
             // Announcement at status change
             mOperationStatus[0] = edt[0];
+            if (Operation.from(edt[0]) == OFF) {
+                if (increaseE1 != null) {
+                    System.out.println("\n\nSolar Cancelled: E2 = " + currentE1);
+                    increaseE1.cancel();
+                    increaseE1 = null;
+                }
+            }
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
@@ -190,10 +201,6 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
         }
     }
 
-    // My challenge
-    private Timer increaseE1;
-    private float currentE1;
-
     public void schedule() throws Exception {
         if (!EchoController.contains("solar")) {
             throw new Exception("Solar did not run yet.");
@@ -264,6 +271,13 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                         System.out.println("Solar Second " + Convert.getCurrentTime() + ", E1 = " + currentE1);
                         setProperty(new EchoProperty(EPC_MEASURED_CUMULATIVE_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray((int) currentE1)));
                     }
+
+                    @Override
+                    public boolean cancel() {
+                        System.out.println("Solar Charging Cancel E1 = " + Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated()));
+                        return super.cancel(); //To change body of generated methods, choose Tools | Templates.
+                    }
+
                 }, delay, period);
             }
         }, startCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));

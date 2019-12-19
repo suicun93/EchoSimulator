@@ -42,13 +42,15 @@ public class MyElectricVehicle extends ElectricVehicle {
     private final byte[] mChargeableDischargeAbleStatus = {(byte) 0x42};                                                        // EPC = 0xC7
     private final byte[] mUsedCapacity1 = {(byte) 0x00, (byte) 0x00, (byte) 0x0B, (byte) 0xB8};                                 // EPC = 0xD0 (Wh)  3000 
     private final byte[] mUsedCapacity2 = {(byte) 0x00, (byte) 0x93};                                                           // EPC = 0xD1
-    private final byte[] mInstantaneousChargeDischargeElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x64};    // EPC = 0xD3 (W)   3600
+    private final byte[] mInstantaneousChargeDischargeElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};    // EPC = 0xD3 (W)   3600
 //    private final byte[] mInstantaneousChargeDischargeCurrent = {(byte) 0x00, (byte) 0x93};                                   // EPC = 0xD4 (A)
-    private final byte[] mOperationModeSetting = {(byte) 0x44};                                                                 // EPC = 0xDA Discharging 
+    private final byte[] mOperationModeSetting = {(byte) 0x44};                                                                 // EPC = 0xDA Standby 
     private final byte[] mRemainingBatteryCapacity1 = {(byte) 0x00, (byte) 0x00, (byte) 0x09, (byte) 0xC4};                     // EPC = 0xE2 (Wh)  2500 
     private final byte[] mRemainingBatteryCapacity2 = {(byte) 0x00, (byte) 0x62};                                               // EPC = 0xE3 (0.1Ah)
 //    private final byte[] mRemainingBatteryCapacity3 = {(byte) 0x60};                                                          // EPC = 0xE4 (%) => calculated
     private Timer startPowerConsumption, endPowerConsumption;
+    private Timer increaseE2;
+    private float currentE2;
 
     @Override
     public void onNew() {
@@ -227,6 +229,75 @@ public class MyElectricVehicle extends ElectricVehicle {
         try {
             // Announcement at status changed
             mOperationModeSetting[0] = edt[0];
+            // Rununing like a actual device.
+            int d0 = Convert.byteArrayToInt(getUsedCapacity1());
+            int d3 = Convert.byteArrayToInt(getMeasuredInstantaneousChargeDischargeElectricEnergy());
+            // Loop every second
+            int delay = 0;
+            int period = 1000;
+            long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
+
+            switch (OperationMode.from(edt[0])) {
+                case Charging:
+                case RapidCharging:
+                    System.out.println("\n\nEV Charging Started: E2 = " + currentE2);
+                    if (increaseE2 != null) {
+                        increaseE2.cancel();
+                    }
+                    increaseE2 = new Timer();
+                    increaseE2.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            currentE2 = currentE2 + ((float) d3 / secondInHour);
+                            System.out.println("EV Second " + Convert.getCurrentTime() + ", E2 = " + currentE2);
+                            setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray((int) currentE2)));
+
+                            if (currentE2 >= d0) {
+                                // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
+                                setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, getUsedCapacity1())); // 0xE2 = 0xD0
+                                setOperationModeSetting(new byte[]{Standby.value});                                   // 0xDA = 0x44.
+                                // Log and cancel
+                                System.out.println("EV Charged Full E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
+                                increaseE2.cancel();
+                                increaseE2 = null;
+                            }
+                        }
+                    }, delay, period);
+                    break;
+                case Discharging:
+                    System.out.println("\n\nEV Discharging Started: E2 = " + currentE2);
+                    if (increaseE2 != null) {
+                        increaseE2.cancel();
+                    }
+                    increaseE2 = new Timer();
+                    increaseE2.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            currentE2 = currentE2 - ((float) d3 / secondInHour);
+                            System.out.println("EV Second " + Convert.getCurrentTime() + ", E2 = " + currentE2);
+                            setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray((int) currentE2)));
+
+                            if (currentE2 <= 0) {
+                                // If 0xE2 <= 0, 0xE2 = 0  AND  0xDA = 0x44.
+                                setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray(0)));  // 0xE2 = 0.
+                                setOperationModeSetting(new byte[]{Standby.value});                                         // 0xDA = 0x44.
+                                // Log and cancel
+                                System.out.println("EV DisCharge out of energy E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
+                                increaseE2.cancel();
+                                increaseE2 = null;
+                            }
+                        }
+                    }, delay, period);
+                    break;
+                default:
+                    if (increaseE2 != null) {
+                        increaseE2.cancel();
+                        increaseE2 = null;
+                        System.out.println("\n\nEV Cancelled: E2 = " + currentE2);
+                    }
+                    setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0)));
+                    break;
+            }
             inform().reqInformOperationModeSetting().send();
         } catch (IOException ex) {
             System.out.println("EV setOperationModeSetting inform: " + ex.getMessage());
@@ -254,7 +325,7 @@ public class MyElectricVehicle extends ElectricVehicle {
         // e4 = e2/d0 * 100%
         int e2 = Convert.byteArrayToInt(getRemainingBatteryCapacity1());
         int d0 = Convert.byteArrayToInt(getUsedCapacity1());
-        int percent = (int) ((float) e2 / d0) * 100;
+        int percent = (int) (((float) e2 / d0) * 100);
         return new byte[]{Convert.intToByte(percent)};
     }
 
@@ -310,9 +381,6 @@ public class MyElectricVehicle extends ElectricVehicle {
         return mInstantaneousChargeDischargeElectricEnergy;
     }
 
-    private Timer increaseE2;
-    private float currentE2;
-
     public void schedule() throws Exception {
         if (!EchoController.contains("ev")) {
             throw new Exception("EV did not run yet.");
@@ -362,77 +430,15 @@ public class MyElectricVehicle extends ElectricVehicle {
 
                 // 0x80 = 0x30
                 setOperationStatus(new byte[]{Operation.ON.value});
-                // 0xDA = mode
-                setOperationModeSetting(mode);
-                OperationMode currentOperationMode = OperationMode.from(mode[0]);
+
                 // 0xD3 = d3
                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(d3)));
 
                 // Get D0, E2
-                int d0 = Convert.byteArrayToInt(getUsedCapacity1());
                 currentE2 = Convert.byteArrayToInt(getRemainingBatteryCapacity1());
-                System.out.println("\n\nEV Charging Started: E2 = " + currentE2);
 
-                // Loop every second
-                int delay = 0;
-                int period = 1000;
-                long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
-
-                switch (currentOperationMode) {
-                    case Charging:
-                    case RapidCharging:
-                        if (increaseE2 != null) {
-                            increaseE2.cancel();
-                        }
-                        increaseE2 = new Timer();
-                        increaseE2.scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run() {
-                                currentE2 = currentE2 + ((float) d3 / secondInHour);
-                                System.out.println("EV Second " + Convert.getCurrentTime() + ", E2 = " + currentE2);
-                                setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray((int) currentE2)));
-
-                                if (currentE2 >= d0) {
-                                    // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
-                                    setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, getUsedCapacity1())); // 0xE2 = 0xD0
-                                    setOperationModeSetting(new byte[]{Standby.value});                                   // 0xDA = 0x44.
-                                    // Log and cancel
-                                    System.out.println("EV Charged Full E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
-                                    increaseE2.cancel();
-                                    increaseE2 = null;
-                                }
-                            }
-                        }, delay, period);
-                        break;
-                    case Discharging:
-                        if (increaseE2 != null) {
-                            increaseE2.cancel();
-                        }
-                        increaseE2 = new Timer();
-                        increaseE2.scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run() {
-                                currentE2 = currentE2 - ((float) d3 / secondInHour);
-                                System.out.println("EV Second " + Convert.getCurrentTime() + ", E2 = " + currentE2);
-                                setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray((int) currentE2)));
-
-                                if (currentE2 <= 0) {
-                                    // If 0xE2 <= 0, 0xE2 = 0  AND  0xDA = 0x44.
-                                    setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray(0)));  // 0xE2 = 0.
-                                    setOperationModeSetting(new byte[]{Standby.value});                                         // 0xDA = 0x44.
-                                    // Log and cancel
-                                    System.out.println("EV DisCharge out of energy E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
-                                    increaseE2.cancel();
-                                    increaseE2 = null;
-                                }
-                            }
-                        }, delay, period);
-                        break;
-                    default:
-                        System.err.println("Operation Mode " + currentOperationMode.name() + " not supported to schedule");
-                        break;
-                }
-
+                // 0xDA = mode
+                setOperationModeSetting(mode);
             }
         }, startCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
 
@@ -452,11 +458,12 @@ public class MyElectricVehicle extends ElectricVehicle {
                 if (increaseE2 != null) {
                     increaseE2.cancel();
                     increaseE2 = null;
+                    // 0xDA = 0x44.
+                    setOperationModeSetting(new byte[]{Standby.value});
+                    // Log and cancel
+                    System.out.println("EV Charging Ends E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
                 }
-                // If 0xE2 >= 0xD0,  0xDA = 0x44.
-                setOperationModeSetting(new byte[]{Standby.value});     // 0xDA = 0x44.
-                // Log and cancel
-                System.out.println("EV Charging Ends E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
+
             }
         }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
     }

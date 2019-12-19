@@ -40,14 +40,16 @@ public class MyBattery extends Battery {
 
     // Private properties
     private final byte[] mRatedElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x0B, (byte) 0xB8};                                   // EPC = 0xD0 (Wh)  3000
-    private final byte[] mInstantaneousChargeDischargeElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x64};            // EPC = 0xD3 (W)   3600
+    private final byte[] mInstantaneousChargeDischargeElectricEnergy = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};            // EPC = 0xD3 (W)   3600
 //    private final byte[] mInstantaneousChargeDischargeCurrent = {(byte) 0x00, (byte) 0x92};                                           // EPC = 0xD4 (A)
-    private final byte[] mOperationModeSetting = {(byte) 0x44};                                                                         // EPC = 0xDA Discharging
+    private final byte[] mOperationModeSetting = {(byte) 0x44};                                                                         // EPC = 0xDA Standby
     private final byte[] mRemainingStoredElectricity1 = {(byte) 0x00, (byte) 0x00, (byte) 0x09, (byte) 0xC4};                           // EPC = 0xE2 (Wh)  2500
     private final byte[] mRemainingStoredElectricity2 = {(byte) 0x00, (byte) 0x93};                                                     // EPC = 0xE3 (0.1Ah)
 //    private final byte[] mRemainingStoredElectricity3 = {(byte) 0x60};                                                                // EPC = 0xE4 (%)
     private final byte[] mBatteryType = {(byte) 0x01};                                                                                  // EPC = 0xE6
     private Timer startPowerConsumption, endPowerConsumption;
+    private Timer increaseE2;
+    private float currentE2;
 
     /**
      * Setup Property maps for getter, setter, status announcement changed
@@ -183,6 +185,76 @@ public class MyBattery extends Battery {
         try {
             // Announcement at status change
             mOperationModeSetting[0] = edt[0];
+            // Rununing like a actual device.
+            int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
+            int d3 = Convert.byteArrayToInt(getMeasuredInstantaneousChargeDischargeElectricEnergy());
+            // Loop every second
+            int delay = 0;
+            int period = 1000;
+            long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
+
+            switch (OperationMode.from(edt[0])) {
+                case RapidCharging:
+                case Charging:
+                    System.out.println("\n\nBattery Charging Started: E2 = " + currentE2);
+                    if (increaseE2 != null) {
+                        increaseE2.cancel();
+                    }
+                    increaseE2 = new Timer();
+                    increaseE2.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            currentE2 = currentE2 + ((float) d3 / secondInHour);
+                            System.out.println("Battery Time " + Convert.getCurrentTime() + ", E2 = " + currentE2);
+                            setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
+
+                            if (currentE2 >= d0) {
+                                // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
+                                setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, getRatedElectricEnergy())); // 0xE2 = 0xD0
+                                setOperationModeSetting(new byte[]{Standby.value});                                       // 0xDA = 0x44.
+                                // Log and cancel
+                                System.out.println("Battery Charged Full E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
+                                increaseE2.cancel();
+                                increaseE2 = null;
+                            }
+                        }
+                    }, delay, period);
+                    break;
+                case Discharging:
+                    System.out.println("\n\nBattery Discharging Started: E2 = " + currentE2);
+                    if (increaseE2 != null) {
+                        increaseE2.cancel();
+                    }
+                    increaseE2 = new Timer();
+                    increaseE2.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            currentE2 = currentE2 - ((float) d3 / secondInHour);
+                            System.out.println("Battery Time " + Convert.getCurrentTime() + ", E2 = " + currentE2);
+                            setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
+
+                            if (currentE2 <= 0) {
+                                // If 0xE2 <= 0, 0xE2 = 0  AND  0xDA = 0x44.
+                                setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray(0)));  // 0xE2 = 0.
+                                setOperationModeSetting(new byte[]{Standby.value});                                         // 0xDA = 0x44.
+                                // Log and cancel
+                                System.out.println("Battery DisCharge out of energy E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
+                                increaseE2.cancel();
+                                increaseE2 = null;
+                            }
+                        }
+                    }, delay, period);
+                    break;
+                default:
+                    if (increaseE2 != null) {
+                        increaseE2.cancel();
+                        increaseE2 = null;
+                        System.out.println("\n\nBattery Cancelled: E2 = " + currentE2);
+                    }
+                    setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0)));
+                    break;
+            }
+
             inform().reqInformOperationModeSetting().send();
         } catch (Exception ex) {
             System.out.println("Battery setOperationModeSetting: " + ex.getMessage());
@@ -205,7 +277,7 @@ public class MyBattery extends Battery {
         // e4 = e2/d0 * 100%
         int e2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
         int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
-        int percent = (int) ((float) e2 / d0) * 100;
+        int percent = (int) (((float) e2 / d0) * 100);
         return new byte[]{Convert.intToByte(percent)};
     }
 
@@ -230,7 +302,8 @@ public class MyBattery extends Battery {
      * @return super.setProperty(property);
      */
     @Override
-    protected synchronized boolean setProperty(EchoProperty property) {
+    protected synchronized boolean setProperty(EchoProperty property
+    ) {
         boolean success = super.setProperty(property);
         if (success) {
             return success;
@@ -276,9 +349,6 @@ public class MyBattery extends Battery {
     protected byte[] getMeasuredInstantaneousChargeDischargeElectricEnergy() {
         return mInstantaneousChargeDischargeElectricEnergy;
     }
-
-    private Timer increaseE2;
-    private float currentE2;
 
     public void schedule() throws Exception {
         if (!EchoController.contains("battery")) {
@@ -329,76 +399,15 @@ public class MyBattery extends Battery {
 
                 // 0x80 = 0x30
                 setOperationStatus(new byte[]{Operation.ON.value});
-                // 0xDA = mode
-                setOperationModeSetting(mode);
-                OperationMode currentOperationMode = OperationMode.from(mode[0]);
+
                 // 0xD3 = d3
                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(d3)));
 
                 // Get D0, E2
-                int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
                 currentE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
-                System.out.println("\n\nBattery Charging Started: E2 = " + currentE2);
 
-                // Loop every second
-                int delay = 0;
-                int period = 1000;
-                long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
-
-                switch (currentOperationMode) {
-                    case Charging:
-                    case RapidCharging:
-                        if (increaseE2 != null) {
-                            increaseE2.cancel();
-                        }
-                        increaseE2 = new Timer();
-                        increaseE2.scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run() {
-                                currentE2 = currentE2 + ((float) d3 / secondInHour);
-                                System.out.println("Battery Time " + Convert.getCurrentTime() + ", E2 = " + currentE2);
-                                setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
-
-                                if (currentE2 >= d0) {
-                                    // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
-                                    setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, getRatedElectricEnergy())); // 0xE2 = 0xD0
-                                    setOperationModeSetting(new byte[]{Standby.value});                                       // 0xDA = 0x44.
-                                    // Log and cancel
-                                    System.out.println("Battery Charged Full E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
-                                    increaseE2.cancel();
-                                    increaseE2 = null;
-                                }
-                            }
-                        }, delay, period);
-                        break;
-                    case Discharging:
-                        if (increaseE2 != null) {
-                            increaseE2.cancel();
-                        }
-                        increaseE2 = new Timer();
-                        increaseE2.scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run() {
-                                currentE2 = currentE2 - ((float) d3 / secondInHour);
-                                System.out.println("Battery Time " + Convert.getCurrentTime() + ", E2 = " + currentE2);
-                                setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
-
-                                if (currentE2 <= 0) {
-                                    // If 0xE2 <= 0, 0xE2 = 0  AND  0xDA = 0x44.
-                                    setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray(0)));  // 0xE2 = 0.
-                                    setOperationModeSetting(new byte[]{Standby.value});                                         // 0xDA = 0x44.
-                                    // Log and cancel
-                                    System.out.println("Battery DisCharge out of energy E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
-                                    increaseE2.cancel();
-                                    increaseE2 = null;
-                                }
-                            }
-                        }, delay, period);
-                        break;
-                    default:
-                        System.err.println("Operation Mode " + currentOperationMode.name() + " not supported to schedule");
-                        break;
-                }
+                // 0xDA = mode
+                setOperationModeSetting(mode);
             }
         }, startCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
 
@@ -418,11 +427,11 @@ public class MyBattery extends Battery {
                 if (increaseE2 != null) {
                     increaseE2.cancel();
                     increaseE2 = null;
+                    // 0xDA = 0x44.
+                    setOperationModeSetting(new byte[]{Standby.value});
+                    // Log and cancel
+                    System.out.println("Battery Charging Ends E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
                 }
-                // If 0xE2 >= 0xD0,  0xDA = 0x44.
-                setOperationModeSetting(new byte[]{Standby.value});                                       // 0xDA = 0x44.
-                // Log and cancel
-                System.out.println("Battery Charging Ends E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
             }
         }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
     }
