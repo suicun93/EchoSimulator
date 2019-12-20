@@ -127,7 +127,7 @@ public class MyBattery extends Battery {
             // Announcement at status change
             mOperationStatus[0] = edt[0];
             inform().reqInformOperationStatus().send();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println("Battery setOperationStatus: " + ex.getMessage());
         }
         return true;
@@ -139,7 +139,7 @@ public class MyBattery extends Battery {
             // Announcement at status change
             mInsallationLocation[0] = edt[0];
             inform().reqInformOperationStatus().send();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println("Battery setInstallationLocation: " + ex.getMessage());
         }
         return true;
@@ -190,18 +190,21 @@ public class MyBattery extends Battery {
             int d0 = Convert.byteArrayToInt(getRatedElectricEnergy());
             int d3 = Convert.byteArrayToInt(getMeasuredInstantaneousChargeDischargeElectricEnergy());
             currentE2 = Convert.byteArrayToInt(getRemainingStoredElectricity1());
+
             // Loop every second
             int delay = 0;
             int period = 1000;
             long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
 
+            // Stop previous thread IncreaseE2
+            if (increaseE2 != null) {
+                increaseE2.cancel();
+                increaseE2 = null;
+            }
             switch (OperationMode.from(edt[0])) {
                 case RapidCharging:
                 case Charging:
                     System.out.println("\n\nBattery Charging Started: E2 = " + currentE2);
-                    if (increaseE2 != null) {
-                        increaseE2.cancel();
-                    }
                     increaseE2 = new Timer();
                     increaseE2.scheduleAtFixedRate(new TimerTask() {
                         @Override
@@ -233,11 +236,9 @@ public class MyBattery extends Battery {
                         }
                     }, delay, period);
                     break;
+
                 case Discharging:
                     System.out.println("\n\nBattery Discharging Started: E2 = " + currentE2);
-                    if (increaseE2 != null) {
-                        increaseE2.cancel();
-                    }
                     increaseE2 = new Timer();
                     increaseE2.scheduleAtFixedRate(new TimerTask() {
                         @Override
@@ -269,17 +270,14 @@ public class MyBattery extends Battery {
                         }
                     }, delay, period);
                     break;
+
                 default:
-                    if (increaseE2 != null) {
-                        increaseE2.cancel();
-                        increaseE2 = null;
-                    }
                     setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0)));
                     break;
             }
 
             inform().reqInformOperationModeSetting().send();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             System.out.println("Battery setOperationModeSetting: " + ex.getMessage());
         }
         return true;
