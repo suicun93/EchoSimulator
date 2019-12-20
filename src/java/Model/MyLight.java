@@ -6,9 +6,13 @@
 package Model;
 
 import java.io.IOException;
+
 import Model.MyDeviceObject.Operation;
-import static Model.MyDeviceObject.Operation.ON;
 import static Model.MyDeviceObject.Operation.OFF;
+import static Model.MyDeviceObject.Operation.ON;
+
+import Common.GPIOManager;
+import Common.GPIOManager.PinState;
 
 /**
  *
@@ -27,6 +31,8 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
 
     // Private properties
     private final byte[] mLightingModeSetting = {(byte) 0x00};
+
+    private final GPIOManager GPIO = GPIOManager.getInstance();
 
     /**
      * Setup Property maps for getter, setter, status announcement changed
@@ -57,17 +63,26 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
      */
     @Override
     protected byte[] getOperationStatus() {
-        return mOperationStatus;
+        try {
+            PinState pinState = GPIO.get();
+            Operation operation = (pinState == PinState.ON) ? ON : OFF;
+            return new byte[]{operation.value};
+        } catch (NumberFormatException | IOException ex) {
+            System.out.println("Error: " + ex.getMessage());
+            return new byte[]{OFF.value};
+        }
     }
 
     @Override
     protected boolean setOperationStatus(byte[] edt) {
         try {
+            PinState pinState = PinState.from(edt);
+            GPIO.changePinModeToWrite();
+            GPIO.set(pinState);
             // Announcement at status change
-            mOperationStatus[0] = edt[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Error: " + ex.getMessage());
         }
         return true;
     }
