@@ -211,14 +211,25 @@ public class MyBattery extends Battery {
                             setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
 
                             if (currentE2 >= d0) {
-                                // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
+                                // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44 AND 0xD3 = 0.
                                 setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, getRatedElectricEnergy())); // 0xE2 = 0xD0
-                                setOperationModeSetting(new byte[]{Standby.value});                                       // 0xDA = 0x44.
+                                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0))); // 0xD3 = 0
+                                mOperationModeSetting[0] = Standby.value; // 0xDA = 0x44.
+                                try {
+                                    inform().reqInformOperationModeSetting().send();
+                                } catch (IOException ex) {
+                                    System.out.println("increase Battery line 223:" + ex.getMessage());
+                                }
                                 // Log and cancel
                                 System.out.println("Battery Charged Full E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
-                                increaseE2.cancel();
-                                increaseE2 = null;
+                                cancel();
                             }
+                        }
+
+                        @Override
+                        public boolean cancel() {
+                            System.out.println("\n\nBattery Cancelled: E2 = " + currentE2);
+                            return super.cancel();
                         }
                     }, delay, period);
                     break;
@@ -236,14 +247,25 @@ public class MyBattery extends Battery {
                             setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray((int) currentE2)));
 
                             if (currentE2 <= 0) {
-                                // If 0xE2 <= 0, 0xE2 = 0  AND  0xDA = 0x44.
+                                // If 0xE2 <= 0, 0xE2 = 0  AND  0xDA = 0x44 AND 0xD3 = 0.
                                 setProperty(new EchoProperty(EPC_REMAINING_STORED_ELECTRICITY1, Convert.intToByteArray(0)));  // 0xE2 = 0.
-                                setOperationModeSetting(new byte[]{Standby.value});                                         // 0xDA = 0x44.
+                                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0))); // 0xD3 = 0
+                                mOperationModeSetting[0] = Standby.value; // 0xDA = 0x44.
+                                try {
+                                    inform().reqInformOperationModeSetting().send();
+                                } catch (IOException ex) {
+                                    System.out.println("increase Battery line 259:" + ex.getMessage());
+                                }
                                 // Log and cancel
                                 System.out.println("Battery DisCharge out of energy E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
-                                increaseE2.cancel();
-                                increaseE2 = null;
+                                cancel();
                             }
+                        }
+
+                        @Override
+                        public boolean cancel() {
+                            System.out.println("\n\nBattery Cancelled: E2 = " + currentE2);
+                            return super.cancel();
                         }
                     }, delay, period);
                     break;
@@ -251,7 +273,6 @@ public class MyBattery extends Battery {
                     if (increaseE2 != null) {
                         increaseE2.cancel();
                         increaseE2 = null;
-                        System.out.println("\n\nBattery Cancelled: E2 = " + currentE2);
                     }
                     setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0)));
                     break;

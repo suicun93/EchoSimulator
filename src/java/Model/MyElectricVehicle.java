@@ -12,11 +12,14 @@ import static Model.MyDeviceObject.OperationMode.Standby;
 
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.device.housingfacilities.ElectricVehicle;
+import static com.sonycsl.echo.eoj.device.housingfacilities.ElectricVehicle.EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -255,14 +258,25 @@ public class MyElectricVehicle extends ElectricVehicle {
                             setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray((int) currentE2)));
 
                             if (currentE2 >= d0) {
-                                // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44.
+                                // If 0xE2 >= 0xD0, 0xE2 = 0xD0  AND  0xDA = 0x44 AND 0xD3 = 0.
                                 setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, getUsedCapacity1())); // 0xE2 = 0xD0
-                                setOperationModeSetting(new byte[]{Standby.value});                                   // 0xDA = 0x44.
+                                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0))); // 0xD3 = 0
+                                mOperationModeSetting[0] = Standby.value; // 0xDA = 0x44.
+                                try {
+                                    inform().reqInformOperationModeSetting().send();
+                                } catch (IOException ex) {
+                                    System.out.println("increase E2 line 270:" + ex.getMessage());
+                                }
                                 // Log and cancel
                                 System.out.println("EV Charged Full E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
-                                increaseE2.cancel();
-                                increaseE2 = null;
+                                cancel();
                             }
+                        }
+
+                        @Override
+                        public boolean cancel() {
+                            System.out.println("\n\nEV Cancelled: E2 = " + currentE2);
+                            return super.cancel();
                         }
                     }, delay, period);
                     break;
@@ -280,14 +294,25 @@ public class MyElectricVehicle extends ElectricVehicle {
                             setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray((int) currentE2)));
 
                             if (currentE2 <= 0) {
-                                // If 0xE2 <= 0, 0xE2 = 0  AND  0xDA = 0x44.
+                                // If 0xE2 <= 0, 0xE2 = 0  AND  0xDA = 0x44 AND 0xD3 = 0.
                                 setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, Convert.intToByteArray(0)));  // 0xE2 = 0.
-                                setOperationModeSetting(new byte[]{Standby.value});                                         // 0xDA = 0x44.
+                                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0))); // 0xD3 = 0
+                                mOperationModeSetting[0] = Standby.value; // 0xDA = 0x44.
+                                try {
+                                    inform().reqInformOperationModeSetting().send();
+                                } catch (IOException ex) {
+                                    System.out.println("increase E2 line 306:" + ex.getMessage());
+                                }
                                 // Log and cancel
                                 System.out.println("EV DisCharge out of energy E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
-                                increaseE2.cancel();
-                                increaseE2 = null;
+                                cancel();
                             }
+                        }
+
+                        @Override
+                        public boolean cancel() {
+                            System.out.println("\n\nEV Cancelled: E2 = " + currentE2);
+                            return super.cancel();
                         }
                     }, delay, period);
                     break;
@@ -295,7 +320,6 @@ public class MyElectricVehicle extends ElectricVehicle {
                     if (increaseE2 != null) {
                         increaseE2.cancel();
                         increaseE2 = null;
-                        System.out.println("\n\nEV Cancelled: E2 = " + currentE2);
                     }
                     setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0)));
                     break;
