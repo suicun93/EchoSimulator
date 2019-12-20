@@ -20,7 +20,7 @@
             <section class="header">
                 <div class="container">
                     <div></div>
-                    <h1 class="head-title">Solar Consumption Configuration</h1>
+                    <h1 class="head-title">ソーラーの消費電力消費電力設定</h1>
                 </div>
             </section>
             <section class="content">
@@ -30,7 +30,7 @@
 
                             <div class="menu-form column is-6 is-offset-3">
                                 <div class="field">
-                                    <label class="label">Start Time</label>
+                                    <label class="label">始まる時間</label>
                                     <div class="control">
                                         <input class="input" id="startTime" type="time" required>
                                     </div>
@@ -38,7 +38,7 @@
 
                                 </div>
                                 <div class="field">
-                                    <label class="label">End Time</label>
+                                    <label class="label">終了時間</label>
                                     <div class="control">
                                         <input class="input" id="endTime" type="time" required>
                                     </div>
@@ -46,12 +46,12 @@
 
                                 </div>
                                 <div class="field" style="display:none">
-                                    <label class="label">Mode</label>
+                                    <label class="label">モード</label>
                                     <div class="select">
                                         <select id="mode"> 
-                                            <option value="0x42" selected="selected">Charge</option>
-                                            <option value="0x41">Rapid Charge</option>
-                                            <option value="0x44">Stand By</option>
+                                            <option value="0x42" selected="selected">充電</option>
+                                            <option value="0x41">急速充電</option>
+                                            <option value="0x44">待機</option>
                                             <select >
 
                                             </select> <br><br>
@@ -59,7 +59,7 @@
                                     </div>
                                 </div>
                                 <div class="field">
-                                    <label class="label">Instantaneous Electric Energy</label>
+                                    <label class="label">瞬時値電力量</label>
                                     <div class="control">
                                         <input class="input" type="number"  id="instantaneous" min="1" max="999999999" placeholder="Unit: W" required>
                                     </div>
@@ -67,19 +67,19 @@
                                 </div>
                                 <div class="field is-grouped">
                                     <div class="control">
-                                        <button class="button is-primary is-outlined" type="submit" onclick="schedule('solar')">Schedule</button>
+                                        <button class="button is-primary is-outlined" type="submit" onclick="schedule('solar')">設定</button>
                                     </div>
                                     <div class="control">
-                                        <button class="button is-danger is-outlined" t onclick="window.location.href = '/Simulator'">Cancel</button>
+                                        <button class="button is-danger is-outlined" t onclick="window.location.href = '/Simulator'">戻る</button>
                                     </div>
                                 </div>
                                 <div class="notification is-primary" id="success-msg" style="display: none">
                                     <button class="delete"></button>
-                                    Set schedule successfully!
+                                    スケジュールを正常に設定しました
                                 </div>
                                 <div class="notification is-danger" id="failed-msg" style="display: none">
                                     <button class="delete"></button>
-                                    Schedule Failed!
+                                    スケジュールに失敗しました！
                                 </div>
                             </div>
                         </div>

@@ -12,7 +12,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css">
         <link rel="stylesheet" href="css/bulma.min.css">
-        <title>Set up system time</title>
+        <title>システムの時刻を設定する</title>
     </head>
     <body>
         <div class="main columns">
@@ -20,7 +20,7 @@
                 <input size="16" type="text" readonly
                        class="form_datetime input is-rounded is-primary" id="time">
                 <button class="button is-primary" onclick="setTime()">
-                    SET
+                    設定
                 </button>
             </div>
         </div>

@@ -22,13 +22,13 @@
             <section>
                 <div class="container">
                     <div class="content">
-                        <h1>Simulator Controller:</h1>
+                        <h1>シミュレーターのコントローラー:</h1>
                         <div class="main-menu-btn">
                             <div class="set-time-wrapper">
                                 <input size="16" type="text" readonly
                                        class="form_datetime input is-rounded is-primary" id="time">
                                 <button class="button is-primary " onclick="setTime()">
-                                    SET
+                                    設定
                                 </button>
                             </div>
                             <div class="msg-wrapper">
@@ -43,18 +43,18 @@
                                                 <% if (EchoController.contains("ev")) {
                                                 %>disabled<%
                                                     }
-                                                %>>Start EV</button>
+                                                %>>EV起動</button>
                                         <button class ="button is-rounded is-warning" type="button" id="stopEVBtn" value="Stop EV" onclick="disable('ev')"
                                                 <% if (!EchoController.contains("ev")) {
                                                 %>disabled<%
                                                     }
                                                 %>
-                                                >Stop EV</button>
+                                                >EV構成</button>
                                         <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/ev.jsp'" id="ev-config-btn"
                                                 <% if (!EchoController.contains("ev")) {
                                                 %>disabled<%
                                                     }
-                                                %>>Configuration</button>
+                                                %>>EV構成</button>
                                     </div>
                                 </div>
                                 <div class="device column columns is-4 is-offset-2">
@@ -66,18 +66,18 @@
                                                 <% if (EchoController.contains("battery")) {
                                                 %>disabled<%
                                                     }
-                                                %>>Start Battery</button>
+                                                %>>蓄電池起動</button>
                                         <button class ="button is-rounded is-warning " type="button" id="stopBatteryBtn" value="Stop Battery" onclick="disable('battery')"
                                                 <% if (!EchoController.contains("battery")) {
                                                 %>disabled<%
                                                     }
                                                 %>
-                                                >Stop Battery</button>
+                                                >蓄電池消し</button>
                                         <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/battery.jsp'" id="batt-config-btn"
                                                 <% if (!EchoController.contains("battery")) {
                                                 %>disabled<%
                                                     }
-                                                %>>Configuration</button>
+                                                %>>蓄電池構成</button>
                                     </div>
                                 </div>
                             </div>
@@ -91,19 +91,19 @@
                                                 <% if (EchoController.contains("solar")) {
                                                 %>disabled<%
                                                     }
-                                                %>>Start Solar</button>
+                                                %>>ソーラー起動</button>
                                         <button class ="button is-rounded is-warning" type="button" id="stopSolarBtn" value="Stop Solar" onclick="disable('solar')"
                                                 <% if (!EchoController.contains("solar")) {
                                                 %>disabled<%
                                                     }
                                                 %>
-                                                >Stop Solar</button>
+                                                >ソーラー消し</button>
                                         <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/solar.jsp'" id="solar-config-btn"
                                                 <% if (!EchoController.contains("solar")) {
                                                 %>disabled<%
                                                     }
                                                 %>
-                                                >Configuration</button>
+                                                >ソーラー構成</button>
                                     </div>
                                 </div>
                                 <div class="device columns column is-4 is-offset-0 is-offset-2">
@@ -115,13 +115,13 @@
                                                 <% if (EchoController.contains("light")) {
                                                 %>disabled<%
                                                     }
-                                                %>>Start Light</button>
+                                                %>>照明起動</button>
                                         <button class ="button is-rounded is-warning " type="button" id="stopLightBtn" value="Stop Light" onclick="disable('light')"
                                                 <% if (!EchoController.contains("light")) {
                                                 %>disabled<%
                                                     }
                                                 %>
-                                                >Stop Light</button>
+                                                >照明消し</button>
                                         <button class="config-btn button is-info is-rounded"  id="light-switch" onclick="switchLight()"
                                                 <% if (!EchoController.contains("light")) {
                                                 %>disabled<%
@@ -160,7 +160,7 @@
                                             var SolarConfigBtn = document.getElementById("solar-config-btn");
                                             var LightStart = document.getElementById('startLightBtn');
                                             var LightStop = document.getElementById('stopLightBtn');
-                                            var LightSwitch = $("#light-switch");
+                                            var LightSwitch = document.getElementById('light-switch');
                                             /**
                                              * Update UI
                                              * @@param {String} device
