@@ -12,14 +12,11 @@ import static Model.MyDeviceObject.OperationMode.Standby;
 
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.device.housingfacilities.ElectricVehicle;
-import static com.sonycsl.echo.eoj.device.housingfacilities.ElectricVehicle.EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
