@@ -33,6 +33,7 @@ public class StopEcho extends HttpServlet {
         try {
             out = response.getWriter();
             Echo.clear();
+            out.print("Stop success!");
         } catch (IOException ex) {
             DebugLog.log(ex);
             if (out != null) {

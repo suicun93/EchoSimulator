@@ -6,6 +6,7 @@
 package Common;
 
 import static Common.DebugLog.ACTUAL_DEVICE;
+import static Common.DebugLog.ACTUAL_PINSTATE;
 import Model.MyDeviceObject.Operation;
 import java.io.IOException;
 import static Common.GPIOManager.Command.SET;
@@ -19,12 +20,9 @@ import static Common.GPIOManager.Command.CHANGE_PIN_STATE_OUT;
  */
 public class GPIOManager {
 
-    private final static int OFF_VALUE = 0;
-    private final static int ON_VALUE = 1;
-
     public static enum PinState {
-        ON(ON_VALUE),
-        OFF(OFF_VALUE);
+        ON(1),
+        OFF(0);
 
         public static PinState from(int state) {
             return state == ON.value ? ON : OFF;
@@ -49,10 +47,27 @@ public class GPIOManager {
         // </editor-fold>
     }
 
+    public static enum Port {
+        GPIO0(17),
+        GPIO1(18);
+        // <editor-fold defaultstate="collapsed" desc="// Skip this">
+        public final int value;
+
+        private Port(int port) {
+            this.value = port;
+        }
+
+        @Override
+        public String toString() {
+            return this.value + " ";
+        }
+        // </editor-fold>
+    }
+
     public static enum Command {
-        CHANGE_PIN_STATE_OUT("gpio -g mode 17 out"),
-        SET("gpio -g write 17 "),
-        GET("gpio -g read 17");
+        CHANGE_PIN_STATE_OUT("gpio -g mode "),
+        SET("gpio -g write "),
+        GET("gpio -g read ");
         // <editor-fold defaultstate="collapsed" desc="// Skip this">
 
         public final String value;
@@ -71,23 +86,26 @@ public class GPIOManager {
     /**
      * Get <b>pinState</b> from Pin 0 in Rasp Pi.
      *
+     * @param port<b>Port</b><br>
      * @return pinState: <b>PinState</b>
      * @throws IOException
      */
-    public PinState get() throws IOException {
-        String output = execute(GET);
-        int mode = Integer.parseInt(output.charAt(0) + "");
-        return PinState.from(mode);
+    public PinState getState(Port port) throws IOException {
+        return executeGet(port);
     }
 
     /**
      * Set <b>pinState</b> to Pin 0 in Rasp Pi.
      *
-     * @param pinState: <b>PinState</b>
+     * @param port      <b>Port</b><br>
+     * pinState: <b>PinState</b>
+     * @param pinState
+     *
      * @throws IOException
      */
-    public void set(PinState pinState) throws IOException {
-        execute(SET, pinState);
+    public void setState(Port port, PinState pinState) throws IOException {
+        changePinModeToWrite(port);
+        executeSet(port, pinState);
     }
 
     /**
@@ -95,43 +113,40 @@ public class GPIOManager {
      *
      * @throws IOException
      */
-    public void changePinModeToWrite() throws IOException {
-        execute(CHANGE_PIN_STATE_OUT);
+    private void changePinModeToWrite(Port port) throws IOException {
+        if (ACTUAL_DEVICE) {
+            DebugLog.log("Debugging: " + "" + CHANGE_PIN_STATE_OUT + port + "out");
+            return;
+        }
+        Runtime.getRuntime().exec("" + CHANGE_PIN_STATE_OUT + port + "out");
     }
 
     // <editor-fold defaultstate="collapsed" desc="// Execute command in Linux/Ubuntu">
-    private static String execute(Command cmd) throws java.io.IOException {
-        if (!ACTUAL_DEVICE) {
-            DebugLog.log("Debugging: " + cmd);
-            return "1";
+    private static PinState executeGet(Port port) throws java.io.IOException {
+        if (ACTUAL_DEVICE) {
+            DebugLog.log("Debugging: " + GET + port);
+            return ACTUAL_PINSTATE;
         }
-        Process proc = Runtime.getRuntime().exec(cmd + "");
+        Process proc = Runtime.getRuntime().exec("" + GET + port);
         java.io.InputStream is = proc.getInputStream();
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        String val;
+        String output;
         if (s.hasNext()) {
-            val = s.next();
+            output = s.next();
         } else {
-            val = "";
+            output = "";
         }
-        return val;
+        int mode = Integer.parseInt(output.charAt(0) + "");
+        return PinState.from(mode);
     }
 
-    private static String execute(Command cmd, PinState pinState) throws java.io.IOException {
-        if (!ACTUAL_DEVICE) {
-            DebugLog.log("Debugging: " + cmd);
-            return "1";
+    private static void executeSet(Port port, PinState pinState) throws java.io.IOException {
+        if (ACTUAL_DEVICE) {
+            DebugLog.log("Debugging: " + SET + port + pinState);
+            ACTUAL_PINSTATE = pinState;
+            return;
         }
-        Process proc = Runtime.getRuntime().exec(cmd + "" + pinState);
-        java.io.InputStream is = proc.getInputStream();
-        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        String val;
-        if (s.hasNext()) {
-            val = s.next();
-        } else {
-            val = "";
-        }
-        return val;
+        Runtime.getRuntime().exec("" + SET + port + pinState);
     }
 
     // </editor-fold>

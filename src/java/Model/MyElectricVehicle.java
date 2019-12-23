@@ -3,6 +3,9 @@ package Model;
 import Common.Config;
 import Common.Convert;
 import Common.DebugLog;
+import Common.GPIOManager;
+import static Common.GPIOManager.PinState.OFF;
+import static Common.GPIOManager.PinState.ON;
 import Main.EchoController;
 import Model.MyDeviceObject.Operation;
 import Model.MyDeviceObject.OperationMode;
@@ -18,6 +21,8 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -52,6 +57,8 @@ public class MyElectricVehicle extends ElectricVehicle {
     private Timer startPowerConsumption, endPowerConsumption;
     private Timer increaseE2;
     private float currentE2;
+    private final GPIOManager GPIO = GPIOManager.getInstance();
+    private final GPIOManager.Port evPort = GPIOManager.Port.GPIO1;
 
     @Override
     public void onNew() {
@@ -251,6 +258,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                 case Charging:
                 case RapidCharging:
                     System.out.println("\n\nEV Charging Started: E2 = " + currentE2);
+                    GPIO.setState(evPort, ON);
                     increaseE2 = new Timer();
                     increaseE2.scheduleAtFixedRate(new TimerTask() {
                         @Override
@@ -264,6 +272,11 @@ public class MyElectricVehicle extends ElectricVehicle {
                                 setProperty(new EchoProperty(EPC_REMAINING_BATTERY_CAPACITY1, getUsedCapacity1())); // 0xE2 = 0xD0
                                 setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0))); // 0xD3 = 0
                                 mOperationModeSetting[0] = Standby.value; // 0xDA = 0x44.
+                                try {
+                                    GPIO.setState(evPort, OFF);
+                                } catch (IOException ex) {
+                                    DebugLog.log(ex);
+                                }
                                 try {
                                     inform().reqInformOperationModeSetting().send();
                                 } catch (IOException ex) {
@@ -285,6 +298,7 @@ public class MyElectricVehicle extends ElectricVehicle {
 
                 case Discharging:
                     System.out.println("\n\nEV Discharging Started: E2 = " + currentE2);
+                    GPIO.setState(evPort, OFF);
                     increaseE2 = new Timer();
                     increaseE2.scheduleAtFixedRate(new TimerTask() {
                         @Override
@@ -319,6 +333,7 @@ public class MyElectricVehicle extends ElectricVehicle {
 
                 default:
                     setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, Convert.intToByteArray(0)));
+                    GPIO.setState(evPort, OFF);
                     break;
             }
 

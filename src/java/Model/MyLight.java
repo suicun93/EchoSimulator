@@ -14,6 +14,7 @@ import static Model.MyDeviceObject.Operation.ON;
 
 import Common.GPIOManager;
 import Common.GPIOManager.PinState;
+import Common.GPIOManager.Port;
 
 /**
  *
@@ -25,7 +26,7 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
 
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
-    private final byte[] mOperationStatus = {(byte) 0x31};                              // EPC = 0x80
+//    private final byte[] mOperationStatus = {(byte) 0x31};                              // EPC = 0x80
     private final byte[] mInsallationLocation = {(byte) 0x00};                          // EPC = 0x81
     private final byte[] mFaultStatus = {(byte) 0x42};                                  // EPC = 0x88
     private final byte[] mManufacturerCode = {0, 0, 0};                                 // EPC = 0x8A
@@ -34,6 +35,7 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
     private final byte[] mLightingModeSetting = {(byte) 0x00};
 
     private final GPIOManager GPIO = GPIOManager.getInstance();
+    private final Port lightPort = GPIOManager.Port.GPIO0;
 
     /**
      * Setup Property maps for getter, setter, status announcement changed
@@ -65,7 +67,7 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
     @Override
     protected byte[] getOperationStatus() {
         try {
-            PinState pinState = GPIO.get();
+            PinState pinState = GPIO.getState(lightPort);
             Operation operation = (pinState == PinState.ON) ? ON : OFF;
             return new byte[]{operation.value};
         } catch (NumberFormatException | IOException ex) {
@@ -78,8 +80,7 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
     protected boolean setOperationStatus(byte[] edt) {
         try {
             PinState pinState = PinState.from(edt);
-            GPIO.changePinModeToWrite();
-            GPIO.set(pinState);
+            GPIO.setState(lightPort, pinState);
             // Announcement at status change
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {

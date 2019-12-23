@@ -12,12 +12,13 @@ package Common;
 public class DebugLog {
 
     public final static boolean DEBUG = true;
-//public final static boolean ACTUAL_DEVICE = false;
-    public final static boolean ACTUAL_DEVICE = true;
+    public final static boolean ACTUAL_DEVICE = false;
+//    public final static boolean ACTUAL_DEVICE = true;
+    public static GPIOManager.PinState ACTUAL_PINSTATE = GPIOManager.PinState.OFF;
 
     public static void log(String message) {
         if (DEBUG) {
-            StackTraceElement t = new Exception().getStackTrace()[0];
+            StackTraceElement t = new Exception().getStackTrace()[2];
             String fullClassName = t.getClassName();
             String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
             String methodName = t.getMethodName();
