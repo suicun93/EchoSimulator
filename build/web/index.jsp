@@ -49,7 +49,7 @@
                                                 %>disabled<%
                                                     }
                                                 %>
-                                                >EV構成</button>
+                                                >EV消し</button>
                                         <button class="config-btn button is-info" onclick="window.location.href = 'PowerConsumption/ev.jsp'" id="ev-config-btn"
                                                 <% if (!EchoController.contains("ev")) {
                                                 %>disabled<%
