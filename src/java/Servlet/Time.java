@@ -6,6 +6,7 @@
 package Servlet;
 
 import Common.Convert;
+import Common.DebugLog;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,7 @@ public class Time extends HttpServlet {
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
-     * 
+     *
      * @param request
      * @param response
      */
@@ -42,7 +43,7 @@ public class Time extends HttpServlet {
                 out.print("success");
             }
         } catch (IOException ex) {
-            System.out.println(Time.class.getName() + ex.getMessage());
+            DebugLog.log(ex);
             if (out != null) {
                 out.print(Time.class.getName() + ex.getMessage());
             }

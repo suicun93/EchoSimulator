@@ -6,6 +6,7 @@
 package Servlet;
 
 import Common.Config;
+import Common.DebugLog;
 import Main.EchoController;
 import Model.MyBattery;
 import Model.MyElectricVehicle;
@@ -55,7 +56,7 @@ public class Schedule extends HttpServlet {
             setup(deviceName, startTime, endTime, mode, d3);
             out.print("success");
         } catch (Exception ex) {
-            System.out.println(Schedule.class.getName() + " " + ex.getMessage());
+            DebugLog.log(ex);
             if (out != null) {
                 out.print(Schedule.class.getName() + " " + ex.getMessage());
             }

@@ -7,6 +7,7 @@ package Model;
 
 import Common.Config;
 import Common.Convert;
+import Common.DebugLog;
 import Main.EchoController;
 import com.sonycsl.echo.EchoProperty;
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
         try {
             schedule();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            DebugLog.log(ex);
         }
     }
 
@@ -117,7 +118,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
             }
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -129,7 +130,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
             mInsallationLocation[0] = edt[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println("Solar inform:" + ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -189,7 +190,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                 try {
                     inform().reqInformMeasuredInstantaneousAmountOfElectricityGenerated().send();
                 } catch (IOException ex) {
-                    System.out.println("Solar EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED inform: " + ex.getMessage());
+                    DebugLog.log(ex);
                 }
                 return true;
             // EPC = 0xE1
@@ -293,7 +294,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
-                    System.out.println(ex.getMessage());
+                    DebugLog.log(ex);
                 }
                 if (increaseE1 != null) {
                     increaseE1.cancel();

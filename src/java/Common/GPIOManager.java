@@ -5,9 +5,9 @@
  */
 package Common;
 
+import static Common.DebugLog.ACTUAL_DEVICE;
 import Model.MyDeviceObject.Operation;
 import java.io.IOException;
-import static Common.Constants.DEBUGGING;
 import static Common.GPIOManager.Command.SET;
 import static Common.GPIOManager.Command.GET;
 import static Common.GPIOManager.Command.CHANGE_PIN_STATE_OUT;
@@ -101,8 +101,8 @@ public class GPIOManager {
 
     // <editor-fold defaultstate="collapsed" desc="// Execute command in Linux/Ubuntu">
     private static String execute(Command cmd) throws java.io.IOException {
-        if (DEBUGGING) {
-            System.out.println("Debugging: " + cmd);
+        if (!ACTUAL_DEVICE) {
+            DebugLog.log("Debugging: " + cmd);
             return "1";
         }
         Process proc = Runtime.getRuntime().exec(cmd + "");
@@ -118,8 +118,8 @@ public class GPIOManager {
     }
 
     private static String execute(Command cmd, PinState pinState) throws java.io.IOException {
-        if (DEBUGGING) {
-            System.out.println("Debugging: " + cmd);
+        if (!ACTUAL_DEVICE) {
+            DebugLog.log("Debugging: " + cmd);
             return "1";
         }
         Process proc = Runtime.getRuntime().exec(cmd + "" + pinState);

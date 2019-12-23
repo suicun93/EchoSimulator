@@ -5,6 +5,7 @@
  */
 package Model;
 
+import Common.DebugLog;
 import java.io.IOException;
 
 import Model.MyDeviceObject.Operation;
@@ -68,7 +69,7 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
             Operation operation = (pinState == PinState.ON) ? ON : OFF;
             return new byte[]{operation.value};
         } catch (NumberFormatException | IOException ex) {
-            System.out.println("Error: " + ex.getMessage());
+            DebugLog.log(ex);
             return new byte[]{OFF.value};
         }
     }
@@ -82,7 +83,7 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
             // Announcement at status change
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println("Error: " + ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -94,7 +95,7 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
             mInsallationLocation[0] = bytes[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }

@@ -2,6 +2,7 @@ package Model;
 
 import Common.Config;
 import Common.Convert;
+import Common.DebugLog;
 import Main.EchoController;
 import Model.MyDeviceObject.Operation;
 import Model.MyDeviceObject.OperationMode;
@@ -69,7 +70,7 @@ public class MyBattery extends Battery {
         try {
             schedule();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            DebugLog.log(ex);
         }
     }
 
@@ -128,7 +129,7 @@ public class MyBattery extends Battery {
             mOperationStatus[0] = edt[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println("Battery setOperationStatus: " + ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -140,7 +141,7 @@ public class MyBattery extends Battery {
             mInsallationLocation[0] = edt[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println("Battery setInstallationLocation: " + ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -221,7 +222,7 @@ public class MyBattery extends Battery {
                                 try {
                                     inform().reqInformOperationModeSetting().send();
                                 } catch (IOException ex) {
-                                    System.out.println("increase Battery line 223:" + ex.getMessage());
+                                    DebugLog.log(ex);
                                 }
                                 // Log and cancel
                                 System.out.println("Battery Charged Full E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
@@ -255,7 +256,7 @@ public class MyBattery extends Battery {
                                 try {
                                     inform().reqInformOperationModeSetting().send();
                                 } catch (IOException ex) {
-                                    System.out.println("increase Battery line 259:" + ex.getMessage());
+                                    DebugLog.log(ex);
                                 }
                                 // Log and cancel
                                 System.out.println("Battery DisCharge out of energy E2 = " + Convert.byteArrayToInt(getRemainingStoredElectricity1()));
@@ -278,7 +279,7 @@ public class MyBattery extends Battery {
 
             inform().reqInformOperationModeSetting().send();
         } catch (IOException ex) {
-            System.out.println("Battery setOperationModeSetting: " + ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -343,7 +344,7 @@ public class MyBattery extends Battery {
                 try {
                     inform().reqInformMeasuredInstantaneousChargeDischargeElectricEnergy().send();
                 } catch (IOException ex) {
-                    System.out.println("Battery EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY inform: " + ex.getMessage());
+                    DebugLog.log(ex);
                 }
                 return true;
 
@@ -440,7 +441,7 @@ public class MyBattery extends Battery {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
-                    System.out.println(ex.getMessage());
+                    DebugLog.log(ex);
                 }
                 if (increaseE2 != null) {
                     increaseE2.cancel();

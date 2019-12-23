@@ -7,6 +7,7 @@ package Main;
 
 import Common.Config;
 import Common.Convert;
+import Common.DebugLog;
 import Model.MyBattery;
 import Model.MyElectricVehicle;
 import Model.MyLight;
@@ -22,7 +23,6 @@ import com.sonycsl.echo.processing.defaults.DefaultNodeProfile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Timer;
 
 /**
  *
@@ -61,7 +61,7 @@ public class EchoController {
             }
             Config.save(CONFIG_FILE, listConfig.toString());
         } catch (Exception ex) {
-            System.out.println("Save Config failed: " + ex.getMessage());
+            DebugLog.log("Save Config failed: " + ex.getMessage());
         }
     }
 
@@ -97,46 +97,37 @@ public class EchoController {
 //            System.out.println("Load config failed: " + e.getMessage());
 //        }
 //    }
-
     public static void start(DeviceObject device) throws IOException {
         // notify to others
         if (listDevice().contains(device)) {
             return;
         }
-        try {
-            // Start Node
-            if (!Echo.isStarted()) {
-                addEvent();  // -> Log to debug.
-                Echo.start(NODE_PROFILE, new DeviceObject[]{});
-            }
-            Echo.getSelfNode().addDevice(device);
-            NodeProfile.informG().reqInformInstanceListNotification().send();
-            saveConfig();
-        } catch (IOException e) {
-            throw new IOException("Start: " + e.getMessage());
+        // Start Node
+        if (!Echo.isStarted()) {
+            addEvent();  // -> Log to debug.
+            Echo.start(NODE_PROFILE, new DeviceObject[]{});
         }
+        Echo.getSelfNode().addDevice(device);
+        NodeProfile.informG().reqInformInstanceListNotification().send();
+        saveConfig();
     }
 
     public static void stop(DeviceObject device) throws IOException {
         // Stop Node
-        try {
-            if (Echo.isStarted()) {
-                if (device instanceof MyBattery) {
-                    ((MyBattery) device).stop();
-                }
-                if (device instanceof MyElectricVehicle) {
-                    ((MyElectricVehicle) device).stop();
-                }
-                if (device instanceof MySolar) {
-                    ((MySolar) device).stop();
-                }
-                Echo.getSelfNode().removeDevice(device);
-                device.removeNode();
-                NodeProfile.informG().reqInformInstanceListNotification().send();
-                saveConfig();
+        if (Echo.isStarted()) {
+            if (device instanceof MyBattery) {
+                ((MyBattery) device).stop();
             }
-        } catch (IOException e) {
-            throw new IOException("Stop: " + e.getMessage());
+            if (device instanceof MyElectricVehicle) {
+                ((MyElectricVehicle) device).stop();
+            }
+            if (device instanceof MySolar) {
+                ((MySolar) device).stop();
+            }
+            Echo.getSelfNode().removeDevice(device);
+            device.removeNode();
+            NodeProfile.informG().reqInformInstanceListNotification().send();
+            saveConfig();
         }
     }
 

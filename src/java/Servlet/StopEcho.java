@@ -5,6 +5,7 @@
  */
 package Servlet;
 
+import Common.DebugLog;
 import com.sonycsl.echo.Echo;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,10 +34,9 @@ public class StopEcho extends HttpServlet {
             out = response.getWriter();
             Echo.clear();
         } catch (IOException ex) {
+            DebugLog.log(ex);
             if (out != null) {
                 out.print(ex.getMessage());
-            } else {
-                System.out.println("Stop simulator failed: " + ex.getMessage());
             }
         }
     }

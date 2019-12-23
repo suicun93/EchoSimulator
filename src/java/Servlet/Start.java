@@ -5,6 +5,7 @@
  */
 package Servlet;
 
+import Common.DebugLog;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -69,7 +70,7 @@ public class Start extends HttpServlet {
             out.print("No device found: " + deviceName);
 
         } catch (IOException ex) {
-            System.out.println(Start.class.getName() + ex.getMessage());
+            DebugLog.log(ex);
             if (out != null) {
                 out.print(Start.class.getName() + ex.getMessage());
             }

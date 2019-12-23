@@ -2,6 +2,7 @@ package Model;
 
 import Common.Config;
 import Common.Convert;
+import Common.DebugLog;
 import Main.EchoController;
 import Model.MyDeviceObject.Operation;
 import Model.MyDeviceObject.OperationMode;
@@ -58,7 +59,7 @@ public class MyElectricVehicle extends ElectricVehicle {
         try {
             schedule();
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            DebugLog.log(ex);
         }
     }
 
@@ -127,7 +128,7 @@ public class MyElectricVehicle extends ElectricVehicle {
             mOperationStatus[0] = edt[0];
             inform().reqInformOperationStatus().send();
         } catch (IOException ex) {
-            System.out.println("EV setOperationStatus: " + ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -139,7 +140,7 @@ public class MyElectricVehicle extends ElectricVehicle {
             mInsallationLocation[0] = edt[0];
             inform().reqInformInstallationLocation().send();
         } catch (IOException ex) {
-            System.out.println("EV setInstallationLocation: " + ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -266,7 +267,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                                 try {
                                     inform().reqInformOperationModeSetting().send();
                                 } catch (IOException ex) {
-                                    System.out.println("increase E2 line 270:" + ex.getMessage());
+                                    DebugLog.log(ex);
                                 }
                                 // Log and cancel
                                 System.out.println("EV Charged Full E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
@@ -300,7 +301,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                                 try {
                                     inform().reqInformOperationModeSetting().send();
                                 } catch (IOException ex) {
-                                    System.out.println("increase E2 line 306:" + ex.getMessage());
+                                    DebugLog.log(ex);
                                 }
                                 // Log and cancel
                                 System.out.println("EV DisCharge out of energy E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
@@ -323,7 +324,7 @@ public class MyElectricVehicle extends ElectricVehicle {
 
             inform().reqInformOperationModeSetting().send();
         } catch (IOException ex) {
-            System.out.println("EV setOperationModeSetting inform: " + ex.getMessage());
+            DebugLog.log(ex);
         }
         return true;
     }
@@ -381,7 +382,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                 try {
                     inform().reqInformMeasuredInstantaneousChargeDischargeElectricEnergy().send();
                 } catch (IOException ex) {
-                    System.out.println("EV EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY inform: " + ex.getMessage());
+                    DebugLog.log(ex);
                 }
                 return true;
 
@@ -473,7 +474,7 @@ public class MyElectricVehicle extends ElectricVehicle {
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException ex) {
-                    System.out.println(ex.getMessage());
+                    DebugLog.log(ex);
                 }
                 if (increaseE2 != null) {
                     increaseE2.cancel();
