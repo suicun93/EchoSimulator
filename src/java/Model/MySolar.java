@@ -83,6 +83,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     protected void setupPropertyMaps() {
         super.setupPropertyMaps();
         // Setter
+        addSetProperty(EPC_OPERATION_STATUS);
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED);
         addSetProperty(EPC_MEASURED_CUMULATIVE_AMOUNT_OF_ELECTRICITY_GENERATED);
         addSetProperty(EPC_SCHEDULE);
