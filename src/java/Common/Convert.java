@@ -105,5 +105,6 @@ public class Convert {
 //printHexArray(intToByteArray(99));
 //printHexArray(hexStringToByteArray("0x4050"));
 //        System.out.println(byteArrayToInt(mRatedElectricEnergy));
+        System.out.println(byteArrayToInt(new byte[]{(byte) 0x00, (byte) 0x99, (byte) 0x99, (byte) 0x99}));
     }
 }

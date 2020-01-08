@@ -21,8 +21,6 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -31,6 +29,8 @@ import java.util.logging.Logger;
 public class MyElectricVehicle extends ElectricVehicle {
 
     public static String name = "ev";
+    public static final byte EPC_SCHEDULE = (byte) 0xFF;
+
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
     private final byte[] mOperationStatus = {(byte) 0x31};            // EPC = 0x80
@@ -89,14 +89,6 @@ public class MyElectricVehicle extends ElectricVehicle {
     /**
      * Setup Property maps for getter, setter, status announcement changed
      * notifier
-     *
-     * @Getter:
-     * @ - EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT
-     *
-     * @Setter:
-     * @ - EPC_REMAINING_BATTERY_CAPACITY1
-     * @ - EPC_REMAINING_BATTERY_CAPACITY3
-     * @ - EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_CURRENT
      */
     @Override
     protected void setupPropertyMaps() {
@@ -107,7 +99,7 @@ public class MyElectricVehicle extends ElectricVehicle {
         // Setter
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addSetProperty(EPC_REMAINING_BATTERY_CAPACITY1);
-        //        addSetProperty(EPC_REMAINING_BATTERY_CAPACITY3);
+        addSetProperty(EPC_SCHEDULE);
 
         // Inform
         addStatusChangeAnnouncementProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
@@ -384,6 +376,20 @@ public class MyElectricVehicle extends ElectricVehicle {
      * @return super.setProperty(property);
      */
     @Override
+    protected synchronized boolean isValidProperty(EchoProperty property) {
+        boolean valid = super.isValidProperty(property);
+        if (valid) {
+            return valid;
+        }
+        switch (property.epc) {
+            case EPC_SCHEDULE:
+                return isValidSchedule(property.edt);
+            default:
+                return false;
+        }
+    }
+
+    @Override
     protected synchronized boolean setProperty(EchoProperty property) {
         boolean success = super.setProperty(property);
         if (success) {
@@ -406,10 +412,10 @@ public class MyElectricVehicle extends ElectricVehicle {
                 System.arraycopy(property.edt, 0, mRemainingBatteryCapacity1, 0, 4);
                 return true;
 
-//            // EPC = 0xE4
-//            case EPC_REMAINING_BATTERY_CAPACITY3:
-//                System.arraycopy(property.edt, 0, mRemainingBatteryCapacity3, 0, 1);
-//                return true;
+            // EPC = 0xFF
+            case EPC_SCHEDULE:
+                return setSchedule(property.edt);
+
             default:
                 return false;
         }
@@ -418,6 +424,113 @@ public class MyElectricVehicle extends ElectricVehicle {
     @Override
     protected byte[] getMeasuredInstantaneousChargeDischargeElectricEnergy() {
         return mInstantaneousChargeDischargeElectricEnergy;
+    }
+
+    private boolean isValidSchedule(byte[] edt) {
+        if (!EchoController.contains("ev")) {
+            DebugLog.log("EV did not run yet.");
+            return false;
+        }
+
+        // Length
+        if (edt == null || !(edt.length == 9)) {
+            return false;
+        }
+
+        // Time
+        int startHour = edt[0];
+        int startMinute = edt[1];
+        int endHour = edt[2];
+        int endMinute = edt[3];
+        if (startHour < 0 || startHour > 24
+                || endHour < 0 || endHour > 24
+                || startMinute < 0 || startMinute > 59
+                || endMinute < 0 || endMinute > 59) {
+            return false;
+        }
+
+        // Mode
+        OperationMode operationMode = OperationMode.from(edt[4]);
+        if (operationMode == null) {
+            return false;
+        }
+
+        // |Instantanous| < 999,999,999
+        byte[] byteD3 = new byte[]{edt[5], edt[6], edt[7], edt[8]};
+        int d3 = Convert.byteArrayToInt(byteD3);
+        if (Math.abs(d3) > 999999999) {
+            return false;
+        }
+
+        // Else
+        return true;
+    }
+
+    private boolean setSchedule(byte[] edt) {
+        int startHour = edt[0];
+        int startMinute = edt[1];
+        int endHour = edt[2];
+        int endMinute = edt[3];
+        OperationMode operationMode = OperationMode.from(edt[4]);
+        byte[] d3 = new byte[]{edt[5], edt[6], edt[7], edt[8]};
+
+        // SetTimeForCalendar
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(Calendar.HOUR_OF_DAY, startHour);
+        startCalendar.set(Calendar.MINUTE, startMinute);
+        startCalendar.set(Calendar.SECOND, 0);
+
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(Calendar.HOUR_OF_DAY, endHour);
+        endCalendar.set(Calendar.MINUTE, endMinute);
+        endCalendar.set(Calendar.SECOND, 0);
+
+        // Start Timer Initilization.
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
+        }
+
+        startPowerConsumption = new Timer();
+        startPowerConsumption.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                // 0x80 = 0x30
+                setOperationStatus(new byte[]{Operation.ON.value});
+
+                // 0xD3 = d3
+                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY, d3));
+
+                // 0xDA = mode
+                setOperationModeSetting(new byte[]{operationMode.value});
+            }
+        }, startCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+
+        // End Timer Initilization.
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+        }
+        endPowerConsumption = new Timer();
+        endPowerConsumption.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    DebugLog.log(ex);
+                }
+                if (increaseE2 != null) {
+                    increaseE2.cancel();
+                    increaseE2 = null;
+                    // 0xDA = 0x44.
+                    setOperationModeSetting(new byte[]{Standby.value});
+                    // Log and cancel
+                    System.out.println("EV Charging Ends E2 = " + Convert.byteArrayToInt(getRemainingBatteryCapacity1()));
+                }
+
+            }
+        }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        return true;
     }
 
     public void schedule() throws Exception {

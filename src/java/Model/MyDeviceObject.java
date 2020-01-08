@@ -21,14 +21,15 @@ public abstract class MyDeviceObject extends DeviceObject {
         ON((byte) 0x30),
         OFF((byte) 0x31);
 
-        public static Operation from(byte value) {
-            return value == ON.value ? ON : OFF;
-        }
         // <editor-fold defaultstate="collapsed" desc="//Skip this">
         public final byte value;
 
         Operation(byte operation) {
             this.value = operation;
+        }
+
+        public static Operation from(byte value) {
+            return value == ON.value ? ON : OFF;
         }
         // </editor-fold>
     }
@@ -48,17 +49,17 @@ public abstract class MyDeviceObject extends DeviceObject {
         // <editor-fold defaultstate="collapsed" desc="//Skip this">
         public final byte value;
 
+        OperationMode(byte operation) {
+            this.value = operation;
+        }
+
         public static OperationMode from(byte value) {
             for (OperationMode mode : values()) {
                 if (mode.value == value) {
                     return mode;
                 }
             }
-            return Other;
-        }
-
-        OperationMode(byte operation) {
-            this.value = operation;
+            return null;
         }
         // </editor-fold>
     }

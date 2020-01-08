@@ -25,6 +25,7 @@ import static Model.MyDeviceObject.Operation.OFF;
 public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration {
 
     public static String name = "solar";
+    public static final byte EPC_SCHEDULE = (byte) 0xFF;
 
     // Mutual properties
     private final byte mInstanceCode = (byte) 0x02;
@@ -84,6 +85,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
         // Setter
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED);
         addSetProperty(EPC_MEASURED_CUMULATIVE_AMOUNT_OF_ELECTRICITY_GENERATED);
+        addSetProperty(EPC_SCHEDULE);
 
         // Informer
         addStatusChangeAnnouncementProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED);
@@ -176,6 +178,20 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
     }
 
     @Override
+    protected synchronized boolean isValidProperty(EchoProperty property) {
+        boolean valid = super.isValidProperty(property);
+        if (valid) {
+            return valid;
+        }
+        switch (property.epc) {
+            case EPC_SCHEDULE:
+                return isValidSchedule(property.edt);
+            default:
+                return false;
+        }
+    }
+
+    @Override
     protected synchronized boolean setProperty(EchoProperty property) {
         boolean success = super.setProperty(property);
         if (success) {
@@ -193,13 +209,144 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                     DebugLog.log(ex);
                 }
                 return true;
+
             // EPC = 0xE1
             case EPC_MEASURED_CUMULATIVE_AMOUNT_OF_ELECTRICITY_GENERATED:
                 System.arraycopy(property.edt, 0, mCumulativeAmountOfElectricityGenerated, 0, 4);
                 return true;
+
+            // EPC = 0xFF
+            case EPC_SCHEDULE:
+                return setSchedule(property.edt);
+
             default:
                 return false;
         }
+    }
+
+    private boolean isValidSchedule(byte[] edt) {
+        if (!EchoController.contains("solar")) {
+            DebugLog.log("Solar did not run yet.");
+            return false;
+        }
+
+        // Length
+        if (edt == null || !(edt.length == 6)) {
+            return false;
+        }
+
+        // Time
+        int startHour = edt[0];
+        int startMinute = edt[1];
+        int endHour = edt[2];
+        int endMinute = edt[3];
+        if (startHour < 0 || startHour > 24
+                || endHour < 0 || endHour > 24
+                || startMinute < 0 || startMinute > 59
+                || endMinute < 0 || endMinute > 59) {
+            return false;
+        }
+
+        // |Instantanous| < 999,999,999
+        byte[] byteE0 = new byte[]{edt[4], edt[5]};
+        int e0 = Convert.byteArrayToInt(byteE0);
+        if (0 > e0 || e0 > 65533) {
+            return false;
+        }
+
+        // Else
+        return true;
+    }
+
+    private boolean setSchedule(byte[] edt) {
+        int startHour = edt[0];
+        int startMinute = edt[1];
+        int endHour = edt[2];
+        int endMinute = edt[3];
+        byte[] e0Byte = new byte[]{edt[4], edt[5]};
+        int e0 = Convert.byteArrayToInt(e0Byte);
+
+        // SetTimeForCalendar
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.set(Calendar.HOUR_OF_DAY, startHour);
+        startCalendar.set(Calendar.MINUTE, startMinute);
+        startCalendar.set(Calendar.SECOND, 0);
+
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.set(Calendar.HOUR_OF_DAY, endHour);
+        endCalendar.set(Calendar.MINUTE, endMinute);
+        endCalendar.set(Calendar.SECOND, 0);
+
+        // Start Timer Initilization.
+        if (startPowerConsumption != null) {
+            startPowerConsumption.cancel();
+        }
+
+        startPowerConsumption = new Timer();
+        startPowerConsumption.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                // 0x80 = 0x30
+                setOperationStatus(new byte[]{Operation.ON.value});
+                // 0xE0 = e0
+                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED, e0Byte));
+                // Get E1
+                currentE1 = Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated());
+                System.out.println("\n\nSolar Charging Started: E1 = " + currentE1);
+
+                // Loop every second
+                int delay = 0;
+                int period = 1000;
+                long secondInHour = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
+                if (increaseE1 != null) {
+                    increaseE1.cancel();
+                }
+                increaseE1 = new Timer();
+                increaseE1.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        currentE1 = currentE1 + ((float) e0 / secondInHour);
+                        System.out.println("Solar Second " + Convert.getCurrentTime() + ", E1 = " + currentE1);
+                        setProperty(new EchoProperty(EPC_MEASURED_CUMULATIVE_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray((int) currentE1)));
+                    }
+
+                    @Override
+                    public boolean cancel() {
+                        System.out.println("Solar Charging Cancel E1 = " + Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated()));
+                        return super.cancel(); //To change body of generated methods, choose Tools | Templates.
+                    }
+
+                }, delay, period);
+            }
+        }, startCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+
+        // End Timer Initilization.
+        if (endPowerConsumption != null) {
+            endPowerConsumption.cancel();
+        }
+        endPowerConsumption = new Timer();
+        endPowerConsumption.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    DebugLog.log(ex);
+                }
+                if (increaseE1 != null) {
+                    increaseE1.cancel();
+                    increaseE1 = null;
+                }
+                //  0x80 = 0x31.
+                setOperationStatus(new byte[]{Operation.OFF.value});
+                // 0xE0 = 0
+                setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray(0)));
+                // Log and cancel
+                System.out.println("Solar Charging Ends E1 = " + Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated()));
+            }
+        }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+        return true;
     }
 
     public void schedule() throws Exception {
