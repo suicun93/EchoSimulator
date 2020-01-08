@@ -97,6 +97,7 @@ public class MyElectricVehicle extends ElectricVehicle {
         addGetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
 
         // Setter
+        addSetProperty(EPC_OPERATION_STATUS);
         addSetProperty(EPC_MEASURED_INSTANTANEOUS_CHARGE_DISCHARGE_ELECTRIC_ENERGY);
         addSetProperty(EPC_REMAINING_BATTERY_CAPACITY1);
         addSetProperty(EPC_SCHEDULE);
