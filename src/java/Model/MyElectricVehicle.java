@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author hoang-trung-duc
  */
-public class MyElectricVehicle extends ElectricVehicle {
+public class MyElectricVehicle extends ElectricVehicle implements Stopable{
 
     public static String name = "ev";
     public static final byte EPC_SCHEDULE = (byte) 0xFF;
@@ -70,6 +70,7 @@ public class MyElectricVehicle extends ElectricVehicle {
         }
     }
 
+    @Override
     public void stop() {
         if (startPowerConsumption != null) {
             startPowerConsumption.cancel();
@@ -79,11 +80,7 @@ public class MyElectricVehicle extends ElectricVehicle {
             endPowerConsumption.cancel();
             endPowerConsumption = null;
         }
-        if (increaseE2 != null) {
-            increaseE2.cancel();
-            increaseE2 = null;
-        }
-
+        setOperationModeSetting(new byte[]{Standby.value});
     }
 
     /**

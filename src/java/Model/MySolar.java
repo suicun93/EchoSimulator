@@ -22,7 +22,7 @@ import static Model.MyDeviceObject.Operation.OFF;
  *
  * @author hoang-trung-duc
  */
-public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration {
+public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration implements Stopable{
 
     public static String name = "solar";
     public static final byte EPC_SCHEDULE = (byte) 0xFF;
@@ -52,6 +52,7 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
         }
     }
 
+    @Override
     public void stop() {
         if (startPowerConsumption != null) {
             startPowerConsumption.cancel();
@@ -65,6 +66,10 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
             increaseE1.cancel();
             increaseE1 = null;
         }
+        //  0x80 = 0x31.
+        setOperationStatus(new byte[]{Operation.OFF.value});
+        // 0xE0 = 0
+        setProperty(new EchoProperty(EPC_MEASURED_INSTANTANEOUS_AMOUNT_OF_ELECTRICITY_GENERATED, Convert.intToByteArray(0)));
     }
 
     /**

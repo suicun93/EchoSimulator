@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author hoang-trung-duc
  */
-public class MyBattery extends Battery {
+public class MyBattery extends Battery implements Stopable {
 
     public static String name = "battery";
     public static final byte EPC_SCHEDULE = (byte) 0xFF;
@@ -75,6 +75,7 @@ public class MyBattery extends Battery {
         }
     }
 
+    @Override
     public void stop() {
         if (startPowerConsumption != null) {
             startPowerConsumption.cancel();
@@ -84,11 +85,7 @@ public class MyBattery extends Battery {
             endPowerConsumption.cancel();
             endPowerConsumption = null;
         }
-        if (increaseE2 != null) {
-            increaseE2.cancel();
-            increaseE2 = null;
-        }
-
+        setOperationModeSetting(new byte[]{Standby.value});
     }
 
     @Override

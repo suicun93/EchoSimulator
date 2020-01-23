@@ -12,6 +12,7 @@ import Model.MyBattery;
 import Model.MyElectricVehicle;
 import Model.MyLight;
 import Model.MySolar;
+import Model.Stopable;
 import com.sonycsl.echo.Echo;
 import com.sonycsl.echo.EchoProperty;
 import com.sonycsl.echo.eoj.EchoObject;
@@ -115,14 +116,8 @@ public class EchoController {
     public static void stop(DeviceObject device) throws IOException {
         // Stop Node
         if (Echo.isStarted()) {
-            if (device instanceof MyBattery) {
-                ((MyBattery) device).stop();
-            }
-            if (device instanceof MyElectricVehicle) {
-                ((MyElectricVehicle) device).stop();
-            }
-            if (device instanceof MySolar) {
-                ((MySolar) device).stop();
+            if (device instanceof Stopable) {
+                ((Stopable) device).stop();
             }
             Echo.getSelfNode().removeDevice(device);
             device.removeNode();

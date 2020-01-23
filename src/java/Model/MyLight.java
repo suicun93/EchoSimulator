@@ -20,7 +20,7 @@ import Common.GPIOManager.Port;
  *
  * @author hoang-trung-duc
  */
-public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.GeneralLighting {
+public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.GeneralLighting implements Stopable {
 
     public static String name = "light";
 
@@ -145,5 +145,10 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
     public void switchStatus() {
         MyDeviceObject.Operation temp = Operation.from(getOperationStatus()[0]) == ON ? OFF : ON;
         setOperationStatus(new byte[]{temp.value});
+    }
+
+    @Override
+    public void stop() {
+        setOperationStatus(new byte[]{OFF.value});
     }
 }
