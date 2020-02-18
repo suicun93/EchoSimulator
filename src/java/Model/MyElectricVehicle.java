@@ -6,6 +6,7 @@ import Common.DebugLog;
 import Common.GPIOManager;
 import static Common.GPIOManager.PinState.OFF;
 import static Common.GPIOManager.PinState.ON;
+import Common.Key;
 import Main.EchoController;
 import Model.MyDeviceObject.Operation;
 import Model.MyDeviceObject.OperationMode;
@@ -26,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author hoang-trung-duc
  */
-public class MyElectricVehicle extends ElectricVehicle implements Stopable{
+public class MyElectricVehicle extends ElectricVehicle implements Stopable, JSONConvertable {
 
     public static String name = "ev";
     public static final byte EPC_SCHEDULE = (byte) 0xFF;
@@ -613,5 +614,19 @@ public class MyElectricVehicle extends ElectricVehicle implements Stopable{
 
             }
         }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+    }
+
+    @Override
+    public String toJSON() {
+        return "      \"" + name + "\":{ \n"
+                + "         \"" + Key.Name + "\":\"" + name + "\",\n"
+                + "         \"" + Key.EOJ + "\":\"" + String.format("0x%04x", ECHO_CLASS_CODE) + "\",\n"
+                + "         \"" + Key.MacAddress + "\":\"" + getNode().getAddressStr() + "\",\n"
+                + "         \"" + Key.OperationStatus + "\" : \"" + OperationStatus.from(getOperationStatus()).name() + "\",\n"
+                + "         \"" + Key.OperationMode + "\" : \"" + OperationMode.from(getOperationModeSetting()).name() + "\",\n"
+                + "         \"" + Key.ChargeDischargeElectricEnergy + "\" : \"" + Convert.byteArrayToInt(getMeasuredInstantaneousChargeDischargeElectricEnergy()) + "\",\n"
+                + "         \"" + Key.RemainingElectric1 + "\" : \"" + Convert.byteArrayToInt(getRemainingBatteryCapacity1()) + "\",\n"
+                + "         \"" + Key.RemainingElectric3 + "\" : \"" + Convert.byteArrayToInt(getRemainingBatteryCapacity3()) + "\"\n"
+                + "      }\n";
     }
 }

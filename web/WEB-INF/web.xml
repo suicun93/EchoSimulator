@@ -5,6 +5,10 @@
         <servlet-name>Start</servlet-name>
         <servlet-class>Servlet.Start</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>GetAllItems</servlet-name>
+        <servlet-class>Servlet.GetAllItems</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Start</servlet-name>
         <url-pattern>/Start</url-pattern>
@@ -54,8 +58,11 @@
         <servlet-name>SwitchLight</servlet-name>
         <url-pattern>/SwitchLight</url-pattern>
     </servlet-mapping>
-
     <!-- Infinite Session timeout-->
+    <servlet-mapping>
+        <servlet-name>GetAllItems</servlet-name>
+        <url-pattern>/GetAllItems</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             -1

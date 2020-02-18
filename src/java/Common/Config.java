@@ -7,6 +7,7 @@ package Common;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -20,6 +21,9 @@ public class Config {
 
     private static final boolean RUNNING_ON_LINUX = true;
 //    private static final boolean RUNNING_ON_LINUX = false;
+    public static long PERIOD = 5000;
+
+    public static String filename = "Config.txt";
 
     public static String getLink() {
         if (RUNNING_ON_LINUX) {

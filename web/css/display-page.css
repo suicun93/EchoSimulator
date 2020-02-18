@@ -1,0 +1,265 @@
+.main-screen {
+  border-radius: 5px; }
+
+.home {
+  background: #efdd9aed;
+  border-radius: 5px;
+  text-align: center;
+  margin: 2rem 0; }
+  .home img {
+    width: 14rem; }
+  .home .home-img-wrapper {
+    width: 100%; }
+  .home .home-info-wrapper h2 {
+    color: #f16953; }
+
+.device-light {
+  display: flex; }
+  .device-light .device {
+    align-self: flex-end; }
+
+.device {
+  background: #f9f9f9e5;
+  display: flex;
+  border-radius: 5px;
+  width: 100%;}
+  .device .device-img-wrapper {
+    width: 40%;
+    padding: 1rem;
+    text-align: center; }
+    .device .device-img-wrapper .remain-energy {
+      font-size: 20px; }
+  .device .device-info-wrapper {
+    width: 60%;
+    padding: 1rem;
+    text-align: center; }
+    .device .device-info-wrapper h4 {
+      text-align: center; }
+    .device .device-info-wrapper div > h5 {
+      color: #f16953; }
+    .device .device-info-wrapper div > h2{
+      color: #f16953; }
+
+.bottom-devices {
+  margin-bottom: 2rem !important; }
+
+/*.devices{
+    margin: 2rem 0;
+}*/
+.ev-charging {
+  display: inline-flex;
+  float: right;
+  margin: 2rem;
+  transform: rotate(225deg);
+  position: relative;
+  top: 3rem; }
+  .ev-charging div {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0.75rem solid;
+    border-color: #ffdd57 #ffdd57 transparent transparent;
+    position: relative;
+    animation-name: slide-in;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    transform: rotate(45deg);
+    opacity: 0; }
+@keyframes slide-in {
+  0% {
+    left: 0;
+    opacity: 1; }
+  25% {
+    left: 2.5rem;
+    opacity: 0.75; }
+  50% {
+    left: 2.5rem;
+    opacity: 0.5; }
+  75% {
+    left: 2.5rem;
+    opacity: .25; }
+  100% {
+    left: 2.5rem;
+    opacity: 0; } }
+  .ev-charging .delay1 {
+    animation-delay: 0.5s; }
+  .ev-charging .delay2 {
+    animation-delay: 1s; }
+  .ev-charging .delay3 {
+    animation-delay: 1.5s; }
+  .ev-charging .delay4 {
+    animation-delay: 2s; }
+
+.ev-discharging {
+  display: inline-flex;
+  float: right;
+  margin: 2rem;
+  transform: rotate(45deg); }
+  .ev-discharging div {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0.75rem solid;
+    border-color: #ffdd57 #ffdd57 transparent transparent;
+    position: relative;
+    animation-name: slide-in;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    transform: rotate(45deg);
+    opacity: 0; }
+@keyframes slide-in {
+  0% {
+    left: 0;
+    opacity: 1; }
+  25% {
+    left: 2.5rem;
+    opacity: 0.75; }
+  50% {
+    left: 2.5rem;
+    opacity: 0.5; }
+  75% {
+    left: 2.5rem;
+    opacity: .25; }
+  100% {
+    left: 2.5rem;
+    opacity: 0; } }
+  .ev-discharging .delay1 {
+    animation-delay: 0.5s; }
+  .ev-discharging .delay2 {
+    animation-delay: 1s; }
+  .ev-discharging .delay3 {
+    animation-delay: 1.5s; }
+  .ev-discharging .delay4 {
+    animation-delay: 2s; }
+
+.battery-discharging {
+  float: left !important;
+  display: inline-flex;
+  float: right;
+  margin: 2rem;
+  transform: rotate(135deg); }
+  .battery-discharging div {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0.75rem solid;
+    border-color: #ffdd57 #ffdd57 transparent transparent;
+    position: relative;
+    animation-name: slide-in;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    transform: rotate(45deg);
+    opacity: 0; }
+@keyframes slide-in {
+  0% {
+    left: 0;
+    opacity: 1; }
+  25% {
+    left: 2.5rem;
+    opacity: 0.75; }
+  50% {
+    left: 2.5rem;
+    opacity: 0.5; }
+  75% {
+    left: 2.5rem;
+    opacity: .25; }
+  100% {
+    left: 2.5rem;
+    opacity: 0; } }
+  .battery-discharging .delay1 {
+    animation-delay: 0.5s; }
+  .battery-discharging .delay2 {
+    animation-delay: 1s; }
+  .battery-discharging .delay3 {
+    animation-delay: 1.5s; }
+  .battery-discharging .delay4 {
+    animation-delay: 2s; }
+
+.battery-charging {
+  float: left !important;
+  display: inline-flex;
+  float: right;
+  margin: 2rem;
+  transform: rotate(-45deg);
+  position: relative;
+  top: 3rem; }
+  .battery-charging div {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0.75rem solid;
+    border-color: #ffdd57 #ffdd57 transparent transparent;
+    position: relative;
+    animation-name: slide-in;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    transform: rotate(45deg);
+    opacity: 0; }
+@keyframes slide-in {
+  0% {
+    left: 0;
+    opacity: 1; }
+  25% {
+    left: 2.5rem;
+    opacity: 0.75; }
+  50% {
+    left: 2.5rem;
+    opacity: 0.5; }
+  75% {
+    left: 2.5rem;
+    opacity: .25; }
+  100% {
+    left: 2.5rem;
+    opacity: 0; } }
+  .battery-charging .delay1 {
+    animation-delay: 0.5s; }
+  .battery-charging .delay2 {
+    animation-delay: 1s; }
+  .battery-charging .delay3 {
+    animation-delay: 1.5s; }
+  .battery-charging .delay4 {
+    animation-delay: 2s; }
+
+.solar-charging {
+  display: inline-flex;
+  float: right;
+  margin: 2rem;
+  transform: rotate(315deg); }
+  .solar-charging div {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0.75rem solid;
+    border-color: #ffdd57 #ffdd57 transparent transparent;
+    position: relative;
+    animation-name: slide-in;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    transform: rotate(45deg);
+    opacity: 0; }
+@keyframes slide-in {
+  0% {
+    left: 0;
+    opacity: 1; }
+  25% {
+    left: 2.5rem;
+    opacity: 0.75; }
+  50% {
+    left: 2.5rem;
+    opacity: 0.5; }
+  75% {
+    left: 2.5rem;
+    opacity: .25; }
+  100% {
+    left: 2.5rem;
+    opacity: 0; } }
+  .solar-charging .delay1 {
+    animation-delay: 0.5s; }
+  .solar-charging .delay2 {
+    animation-delay: 1s; }
+  .solar-charging .delay3 {
+    animation-delay: 1.5s; }
+  .solar-charging .delay4 {
+    animation-delay: 2s; }
+
+/*# sourceMappingURL=display-page.css.map */

@@ -1,0 +1,121 @@
+$menu-bg-color:#ffffff30;
+$border-radius: 5px;
+$device-bg-color:#f9f9f9e5;
+$device-info-color:#f16953;
+.main-screen{
+    border-radius: $border-radius;
+}
+.home{
+    background: #efdd9aed;
+    border-radius: $border-radius;
+    text-align: center;
+    margin: 2rem 0;
+    img{
+        width: 14rem;
+    }
+    .home-img-wrapper{
+        width: 100%;
+    }
+    .home-info-wrapper{
+        h2{
+            color:$device-info-color;
+        }
+    }
+}
+.device-light{
+    display: flex;
+    .device{
+        align-self: flex-end;
+    }
+}
+.device{
+    background: $device-bg-color;
+    display: flex;
+    border-radius: $border-radius;
+    width: 100%;
+    .device-img-wrapper{
+        width: 40%;
+        padding: 1rem;
+        text-align: center;
+        .remain-energy{
+            font-size: 20px;
+        }
+    }
+    .device-info-wrapper{
+        width: 60%;
+        padding: 1rem;
+        text-align: center;
+        h4{
+            text-align: center;
+        }
+        h2{
+            color: $device-info-color;
+        }
+        
+    }
+}
+.bottom-devices{
+    margin-bottom: 2rem !important;
+}
+/*.devices{
+    margin: 2rem 0;
+}*/
+@mixin electric-arrow($deg){
+    display: inline-flex;
+    float: right;
+    margin: 2rem;
+    transform: rotate($deg);
+    div{
+        width: 2.5rem;
+        height: 2.5rem;
+        border: 0.75rem solid;
+        border-color:  #ffdd57 #ffdd57 transparent transparent;
+        position: relative;
+        animation-name: slide-in;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+        transform: rotate(45deg);
+        opacity: 0;
+    }
+    @keyframes slide-in {
+        0%{left:0; opacity: 1;}
+        25%{left:2.5rem; opacity: 0.75;}
+        50%{left: 2.5rem; opacity: 0.5;}
+        75%{left:2.5rem; opacity: .25;}
+        100%{left: 2.5rem; opacity: 0;}
+    }
+    .delay1{
+        animation-delay: 0.5s;
+    }
+    .delay2{
+        animation-delay: 1s;
+    }
+    .delay3{
+        animation-delay: 1.5s;
+    }
+    .delay4{
+        animation-delay: 2s;
+    }
+}
+.ev-charging{
+    @include electric-arrow(180deg + 45deg);
+    position: relative;
+    top: 3rem;
+}
+.ev-discharging{
+    @include electric-arrow(45deg);
+}
+.battery-discharging{
+    float: left !important;
+    @include electric-arrow(135deg);
+}
+.battery-charging{
+    float: left !important;
+    @include electric-arrow(-45deg);
+    position: relative;
+    top: 3rem;
+}
+.solar-charging{
+    @include electric-arrow(315deg);
+}

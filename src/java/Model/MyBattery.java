@@ -3,6 +3,7 @@ package Model;
 import Common.Config;
 import Common.Convert;
 import Common.DebugLog;
+import Common.Key;
 import Main.EchoController;
 import Model.MyDeviceObject.Operation;
 import Model.MyDeviceObject.OperationMode;
@@ -23,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author hoang-trung-duc
  */
-public class MyBattery extends Battery implements Stopable {
+public class MyBattery extends Battery implements Stopable, JSONConvertable {
 
     public static String name = "battery";
     public static final byte EPC_SCHEDULE = (byte) 0xFF;
@@ -566,5 +567,19 @@ public class MyBattery extends Battery implements Stopable {
                 }
             }
         }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+    }
+
+    @Override
+    public String toJSON() {
+        return "      \"" + "battery" + "\":{ \n"
+                + "         \"" + Key.Name + "\":\"" + name + "\",\n"
+                + "         \"" + Key.EOJ + "\":\"" + String.format("0x%04x", ECHO_CLASS_CODE) + "\",\n"
+                + "         \"" + Key.MacAddress + "\":\"" + getNode().getAddressStr() + "\",\n"
+                + "         \"" + Key.OperationStatus + "\" : \"" + OperationStatus.from(getOperationStatus()).name() + "\",\n"
+                + "         \"" + Key.OperationMode + "\" : \"" + OperationMode.from(getOperationModeSetting()).name() + "\",\n"
+                + "         \"" + Key.ChargeDischargeElectricEnergy + "\" : \"" + Convert.byteArrayToInt(getMeasuredInstantaneousChargeDischargeElectricEnergy()) + "\",\n"
+                + "         \"" + Key.RemainingElectric1 + "\" : \"" + Convert.byteArrayToInt(getRemainingStoredElectricity1()) + "\",\n"
+                + "         \"" + Key.RemainingElectric3 + "\" : \"" + Convert.byteArrayToInt(getRemainingStoredElectricity3BatteryStateOfHealth()) + "\"\n"
+                + "      }\n";
     }
 }

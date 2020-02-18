@@ -8,6 +8,7 @@ package Model;
 import Common.Config;
 import Common.Convert;
 import Common.DebugLog;
+import Common.Key;
 import Main.EchoController;
 import com.sonycsl.echo.EchoProperty;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import static Model.MyDeviceObject.Operation.OFF;
  *
  * @author hoang-trung-duc
  */
-public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration implements Stopable{
+public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.HouseholdSolarPowerGeneration implements Stopable, JSONConvertable {
 
     public static String name = "solar";
     public static final byte EPC_SCHEDULE = (byte) 0xFF;
@@ -461,5 +462,17 @@ public class MySolar extends com.sonycsl.echo.eoj.device.housingfacilities.House
                 System.out.println("Solar Charging Ends E1 = " + Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated()));
             }
         }, endCalendar.getTime(), TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+    }
+
+    @Override
+    public String toJSON() {
+        return "      \"" + name + "\":{ \n"
+                + "         \"" + Key.Name + "\":\"" + name + "\",\n"
+                + "         \"" + Key.EOJ + "\":\"" + String.format("0x%04x", ECHO_CLASS_CODE) + "\",\n"
+                + "         \"" + Key.MacAddress + "\":\"" + getNode().getAddressStr() + "\",\n"
+                + "         \"" + Key.OperationStatus + "\" : \"" + OperationStatus.from(getOperationStatus()).name() + "\",\n"
+                + "         \"" + Key.InstantaneousAmountOfElectricityGenerated + "\" : \"" + Convert.byteArrayToInt(getMeasuredInstantaneousAmountOfElectricityGenerated()) + "\",\n"
+                + "         \"" + Key.AmountOfElectricityGenerated + "\" : \"" + Convert.byteArrayToInt(getMeasuredCumulativeAmountOfElectricityGenerated()) + "\"\n"
+                + "      }\n";
     }
 }

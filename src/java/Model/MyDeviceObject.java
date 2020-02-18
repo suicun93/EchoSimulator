@@ -61,6 +61,10 @@ public abstract class MyDeviceObject extends DeviceObject {
             }
             return null;
         }
+
+        public static OperationMode from(byte[] value) {
+            return from(value[0]);
+        }
         // </editor-fold>
     }
 

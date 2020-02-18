@@ -143,7 +143,7 @@ public class EchoController {
     }
 
     // Device Object List to array
-    private static ArrayList<DeviceObject> listDevice() {
+    public static ArrayList<DeviceObject> listDevice() {
         ArrayList<DeviceObject> listDevice = new ArrayList<>();
         if (Echo.getSelfNode() != null) {
             listDevice.addAll(Arrays.asList(Echo.getSelfNode().getDevices()));

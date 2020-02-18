@@ -15,12 +15,13 @@ import static Model.MyDeviceObject.Operation.ON;
 import Common.GPIOManager;
 import Common.GPIOManager.PinState;
 import Common.GPIOManager.Port;
+import Common.Key;
 
 /**
  *
  * @author hoang-trung-duc
  */
-public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.GeneralLighting implements Stopable {
+public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.GeneralLighting implements Stopable, JSONConvertable {
 
     public static String name = "light";
 
@@ -150,5 +151,15 @@ public class MyLight extends com.sonycsl.echo.eoj.device.housingfacilities.Gener
     @Override
     public void stop() {
         setOperationStatus(new byte[]{OFF.value});
+    }
+
+    @Override
+    public String toJSON() {
+        return "      \"" + name + "\":{ \n"
+                + "         \"" + Key.Name + "\":\"" + name + "\",\n"
+                + "         \"" + Key.EOJ + "\":\"" + String.format("0x%04x", ECHO_CLASS_CODE) + "\",\n"
+                + "         \"" + Key.MacAddress + "\":\"" + getNode().getAddressStr() + "\",\n"
+                + "         \"" + Key.OperationStatus + "\" : \"" + OperationStatus.from(getOperationStatus()).name() + "\"\n"
+                + "      }\n";
     }
 }
